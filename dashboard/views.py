@@ -14,7 +14,7 @@ def index(request):
     item_count = items.count()
     order = Order.objects.all()
     order_count = order.count()
-    customer = User.objects.filter(groups=2)
+    customer = User.objects.filter()
     customer_count = customer.count()
 
     if request.method == 'POST':
@@ -41,7 +41,7 @@ def index(request):
 def products(request):
     items = Item.objects.all()
     item_count = items.count()
-    customer = User.objects.filter(groups=2)
+    customer = User.objects.filter()
     customer_count = customer.count()
     order = Order.objects.all()
     order_count = order.count()
@@ -94,7 +94,7 @@ def customers(request):
 @login_required(login_url='user-login')
 #@allowed_users(allowed_roles=['Admin'])
 def customer_detail(request, pk):
-    customer = User.objects.all(groups=2)
+    customer = User.objects.all()
     customer_count = customer.count()
     product = Item.objects.all()
     product_count = product.count()
@@ -145,7 +145,7 @@ def item_delete(request, pk):
 def order(request):
     order = Order.objects.all()
     order_count = order.count()
-    customer = User.objects.filter(groups=2)
+    customer = User.objects.filter()
     customer_count = customer.count()
     items = Item.objects.all()
     item_count = items.count()
