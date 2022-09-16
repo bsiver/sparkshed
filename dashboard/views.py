@@ -78,14 +78,14 @@ def item_detail(request, pk):
 def customers(request):
     customer = User.objects.all()
     customer_count = customer.count()
-    product = Item.objects.all()
-    product_count = product.count()
+    items = Item.objects.all()
+    item_count = items.count()
     order = Order.objects.all()
     order_count = order.count()
     context = {
         'customer': customer,
         'customer_count': customer_count,
-        'product_count': product_count,
+        'item_count': item_count,
         'order_count': order_count,
     }
     return render(request, 'dashboard/customers.html', context)
@@ -147,13 +147,13 @@ def order(request):
     order_count = order.count()
     customer = User.objects.filter(groups=2)
     customer_count = customer.count()
-    product = Item.objects.all()
-    product_count = product.count()
+    items = Item.objects.all()
+    item_count = items.count()
 
     context = {
         'order': order,
         'customer_count': customer_count,
-        'product_count': product_count,
+        'item_count': item_count,
         'order_count': order_count,
     }
     return render(request, 'dashboard/order.html', context)
