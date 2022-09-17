@@ -16,18 +16,7 @@ def index(request):
     order_count = order.count()
     customer = User.objects.filter()
     customer_count = customer.count()
-
-    if request.method == 'POST':
-        form = OrderForm(request.POST)
-        if form.is_valid():
-            obj = form.save(commit=False)
-            obj.customer = request.user
-            obj.save()
-            return redirect('dashboard-index')
-    else:
-        form = OrderForm()
     context = {
-        'form': form,
         'order': order,
         'items': items,
         'item_count': item_count,
@@ -150,7 +139,18 @@ def order(request):
     items = Item.objects.all()
     item_count = items.count()
 
+    if request.method == 'POST':
+        form = OrderForm(request.POST)
+        if form.is_valid():
+            obj = form.save(commit=False)
+            obj.customer = request.user
+            obj.save()
+            return redirect('dashboard-order')
+    else:
+        form = OrderForm()
+
     context = {
+        'form': form,
         'order': order,
         'customer_count': customer_count,
         'item_count': item_count,
