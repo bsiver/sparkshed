@@ -157,3 +157,31 @@ def order(request):
         'order_count': order_count,
     }
     return render(request, 'dashboard/order.html', context)
+
+@login_required(login_url='user-login')
+#@allowed_users(allowed_roles=['Admin'])
+def order_edit(request, pk):
+    order = Order.objects.get(id=pk)
+    if request.method == 'POST':
+        form = OrderForm(request.POST, instance=order)
+        if form.is_valid():
+            form.save()
+            return redirect('dashboard-order')
+    else:
+        form = OrderForm(instance=order)
+    context = {
+        'form': form
+    }
+    return render(request, 'dashboard/order_edit.html', context)
+
+@login_required(login_url='user-login')
+#@allowed_users(allowed_roles=['Admin'])
+def order_delete(request, pk):
+    order = Order.objects.get(id=pk)
+    if request.method == 'POST':
+        order.delete()
+        return redirect('dashboard-order')
+    context = {
+        'order': order
+    }
+    return render(request, 'dashboard/order_delete.html', context)

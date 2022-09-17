@@ -22,6 +22,7 @@ class Order(models.Model):
     item = models.ForeignKey(Item, on_delete=models.CASCADE, null=True)
     customer = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
     order_quantity = models.PositiveIntegerField(null=True)
+    updated_date = models.DateTimeField(editable=False, auto_now=True)
 
     def __str__(self):
         return f'{self.customer}-{self.item}'
