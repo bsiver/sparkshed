@@ -9,6 +9,14 @@ class Item(models.Model):
     def __str__(self):
         return f'{self.name}'
 
+    @property
+    def quantity_ordered(self):
+        return sum([order.order_quantity for order in Order.objects.filter(name__name=self.name)])
+
+    @property
+    def quantity_remaining(self):
+        return self.quantity - self.quantity_ordered
+
 
 class Order(models.Model):
     name = models.ForeignKey(Item, on_delete=models.CASCADE, null=True)
