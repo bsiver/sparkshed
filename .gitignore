@@ -13,8 +13,9 @@ media
 .idea/**/dictionaries
 .idea/**/shelf
 .idea/sqldialects.xml
-.idea/*
+.idea/**
 
 *.py[cod] 
 *$py.class 
 
+.DS_Store
