@@ -11,7 +11,7 @@ class Item(models.Model):
 
     @property
     def quantity_ordered(self):
-        return sum([order.order_quantity for order in Order.objects.filter(name__name=self.name)])
+        return sum([order.order_quantity for order in Order.objects.filter(item__name=self.name)])
 
     @property
     def quantity_remaining(self):
@@ -19,9 +19,9 @@ class Item(models.Model):
 
 
 class Order(models.Model):
-    name = models.ForeignKey(Item, on_delete=models.CASCADE, null=True)
+    item = models.ForeignKey(Item, on_delete=models.CASCADE, null=True)
     customer = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
     order_quantity = models.PositiveIntegerField(null=True)
 
     def __str__(self):
-        return f'{self.customer}-{self.name}'
+        return f'{self.customer}-{self.item}'
