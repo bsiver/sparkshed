@@ -18,6 +18,20 @@ class Item(models.Model):
         return self.quantity - self.quantity_ordered
 
 
+class Kit(models.Model):
+    name = models.CharField(max_length=100, null=True)
+    updated_date = models.DateTimeField(editable=False, auto_now=True)
+
+    def __str__(self):
+        return self.name
+
+
+class KitItem(models.Model):
+    item = models.ForeignKey(Item, on_delete=models.CASCADE, null=True)
+    kit = models.ForeignKey(Kit, on_delete=models.CASCADE, null=True)
+    quantity = models.PositiveIntegerField(null=True)
+
+
 class Order(models.Model):
     item = models.ForeignKey(Item, on_delete=models.CASCADE, null=True)
     customer = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
