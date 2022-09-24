@@ -9,6 +9,7 @@ from .forms import OrderForm
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.template import RequestContext
 from .decorators import auth_users, allowed_users
 # Create your views here.
 
@@ -16,17 +17,10 @@ from .decorators import auth_users, allowed_users
 @login_required(login_url='user-login')
 def index(request):
     items = Item.objects.all()
-    item_count = items.count()
     order = Order.objects.all()
-    order_count = order.count()
-    customer = User.objects.filter()
-    customer_count = customer.count()
     context = {
         'order': order,
         'items': items,
-        'item_count': item_count,
-        'order_count': order_count,
-        'customer_count': customer_count,
     }
     return render(request, 'dashboard/index.html', context)
 
@@ -34,13 +28,6 @@ def index(request):
 @login_required(login_url='user-login')
 def products(request):
     items = Item.objects.all()
-    item_count = items.count()
-    customer = User.objects.filter()
-    customer_count = customer.count()
-    order = Order.objects.all()
-    order_count = order.count()
-    product_quantity = Item.objects.filter(name='')
-    kit_count = Kit.objects.all().count()
     if request.method == 'POST':
         form = ItemForm(request.POST)
         if form.is_valid():
@@ -52,11 +39,7 @@ def products(request):
         form = ItemForm()
     context = {
         'items': items,
-        'form': form,
-        'customer_count': customer_count,
-        'item_count': item_count,
-        'order_count': order_count,
-        'kit_count': kit_count
+        'form': form
     }
     return render(request, 'dashboard/items.html', context)
 
@@ -73,18 +56,8 @@ def item_detail(request, pk):
 #@allowed_users(allowed_roles=['Admin'])
 def customers(request):
     customer = User.objects.all()
-    customer_count = customer.count()
-    items = Item.objects.all()
-    item_count = items.count()
-    order = Order.objects.all()
-    order_count = order.count()
-    kit_count = Kit.objects.all().count()
     context = {
         'customer': customer,
-        'customer_count': customer_count,
-        'item_count': item_count,
-        'order_count': order_count,
-        'kit_count': kit_count
     }
     return render(request, 'dashboard/customers.html', context)
 
@@ -92,21 +65,9 @@ def customers(request):
 @login_required(login_url='user-login')
 #@allowed_users(allowed_roles=['Admin'])
 def customer_detail(request, pk):
-    customer = User.objects.all()
-    customer_count = customer.count()
-    product = Item.objects.all()
-    product_count = product.count()
-    order = Order.objects.all()
-    order_count = order.count()
-    customers = User.objects.get(id=pk)
-    kit_count = Kit.objects.all.count()
-
+    customers = User.objects.all()
     context = {
         'customers': customers,
-        'customer_count': customer_count,
-        'product_count': product_count,
-        'order_count': order_count,
-        'kit_count': kit_count
     }
     return render(request, 'dashboard/customers_detail.html', context)
 
@@ -144,12 +105,6 @@ def item_delete(request, pk):
 #@login_required(login_url='user-login')
 def order(request):
     order = Order.objects.all()
-    order_count = order.count()
-    customer = User.objects.filter()
-    customer_count = customer.count()
-    items = Item.objects.all()
-    item_count = items.count()
-    kit_count = Kit.objects.all().count()
 
     if request.method == 'POST':
         form = OrderForm(request.POST)
@@ -164,10 +119,6 @@ def order(request):
     context = {
         'form': form,
         'order': order,
-        'customer_count': customer_count,
-        'item_count': item_count,
-        'kit_count': kit_count,
-        'order_count': order_count,
     }
     return render(request, 'dashboard/order.html', context)
 
@@ -203,12 +154,6 @@ def order_delete(request, pk):
 #@login_required(login_url='user-login')
 def kits(request):
     kits = Kit.objects.all()
-    kit_count = kits.count()
-    customer = User.objects.filter()
-    customer_count = customer.count()
-    items = Item.objects.all()
-    item_count = items.count()
-    order_count = Order.objects.all().count()
 
     if request.method == 'POST':
         form = KitItemFormset(request.POST)
@@ -222,13 +167,17 @@ def kits(request):
 
     context = {
         'form': form,
-        'kits': kits,
-        'customer_count': customer_count,
-        'item_count': item_count,
-        'order_count': order_count,
-        'kit_count': kit_count,
+        'kits': kits
     }
     return render(request, 'dashboard/kit.html', context)
+
+
+def kits(request):
+    qs = Kit.objects.all()
+    context = {
+        "object_list": qs
+    }
+    return render(request, "dashboard/kit.html", context)
 
 @login_required(login_url='user-login')
 #@allowed_users(allowed_roles=['Admin'])

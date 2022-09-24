@@ -12,7 +12,8 @@ urlpatterns = [
     path('order/', views.order, name='dashboard-order'),
     path('order/delete/<int:pk>/', views.order_delete, name='dashboard-order-delete'),
     path('order/detail/<int:pk>/', views.order_edit, name='dashboard-order-edit'),
-    path('kit/', views.kits, name='dashboard-kits'),
+    path('kit/', views.kits, name='kits'),
+    path('kit/create/', views.kits, name='kit-create'),
     path('kit/delete/<int:pk>/', views.order_delete, name='dashboard-kit-delete'),
     path('kit/detail/<int:pk>/', views.order_edit, name='dashboard-kit-edit'),
 ]
