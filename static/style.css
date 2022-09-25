@@ -5,3 +5,16 @@ body{
     transform: scale(1.1);
     transition: 0.1s ease-in-out;
 }
+
+.htmx-indicator {
+    display: none;
+}
+.htmx-request .htmx-indicator {
+    display: inline;
+}
+.htmx-inverted-indicator {
+    display: inline;
+}
+.htmx-request .htmx-inverted-indicator {
+    display: none;
+}

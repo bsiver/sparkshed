@@ -12,8 +12,14 @@ urlpatterns = [
     path('order/', views.order, name='dashboard-order'),
     path('order/delete/<int:pk>/', views.order_delete, name='dashboard-order-delete'),
     path('order/detail/<int:pk>/', views.order_edit, name='dashboard-order-edit'),
-    path('kit/', views.kits, name='kits'),
-    path('kit/create/', views.kits, name='kit-create'),
-    path('kit/delete/<int:pk>/', views.order_delete, name='dashboard-kit-delete'),
-    path('kit/detail/<int:pk>/', views.order_edit, name='dashboard-kit-edit'),
+    path('kit/', views.create_kit, name='kits'),
+    path('kit/create/', views.create_kit, name='kit-create'),
+    path('kit/delete/<int:id>/', views.kit_delete, name='kit-delete'),
+    path('kit/edit/<int:id>/', views.kit_update, name='kit-edit'),
+    path('kit/detail/<int:id>/', views.kit_detail, name='kit-detail'),
+
+    # kit items
+    path('<int:parent_id>/kit_item/create', views.create_kit_item, name='kit-item-create'),
+    path('<int:parent_id>/kit_item/detail/<int:id>/', views.create_kit_item, name='kit-item-detail'),
+    path('<int:parent_id>/kit_item/delete/<int:id>/', views.delete_kit_item, name='kit-item-delete'),
 ]
