@@ -27,4 +27,4 @@ class KitItemForm(forms.ModelForm):
 
     class Meta:
         model = KitItem
-        fields = ['quantity', 'item']
+        fields = ['item', 'quantity']
