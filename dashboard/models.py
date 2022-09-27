@@ -59,7 +59,7 @@ class KitItem(models.Model):
             "parent_id": self.kit.id,
             "id": self.id
         }
-        return reverse("kit-item-create", kwargs=kwargs)
+        return reverse("kit-item-delete", kwargs=kwargs)
 
     def get_hx_edit_url(self):
         kwargs = {

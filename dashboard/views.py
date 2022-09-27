@@ -162,8 +162,10 @@ def order_delete(request, pk):
 @login_required()
 def create_kit(request):
     form = KitForm(request.POST or None)
+    kit_items = KitItem.objects.all()
     context = {
         'form': form,
+        'kit_items': kit_items
     }
     if form.is_valid():
         obj = form.save(commit=False)
@@ -192,7 +194,7 @@ def kit_detail(request, id=None):
 
 @login_required()
 def kit_update(request, id=None):
-    obj = get_object_or_404(Kit, id=id, user=request.user)
+    obj = get_object_or_404(Kit, id=id)
     form = KitForm(request.POST or None, instance=obj)
     new_kit_item_url = reverse('kit-item-create', kwargs={"parent_id": obj.id})
     context = {
@@ -210,11 +212,11 @@ def kit_update(request, id=None):
 
 @login_required(login_url='user-login')
 #@allowed_users(allowed_roles=['Admin'])
-def kit_delete(request, pk):
-    kit = Kit.objects.get(id=pk)
+def kit_delete(request, id):
+    kit = Kit.objects.get(id=id)
     if request.method == 'POST':
         kit.delete()
-        return redirect('dashboard-kit')
+        return redirect('kits')
     context = {
         'kit': kit
     }

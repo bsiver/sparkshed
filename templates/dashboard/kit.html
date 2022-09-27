@@ -31,16 +31,18 @@
             <table class="table bg-white">
                 <thead class="bg-info text-white">
                 <tr>
-                    <th scope="col">Date</th>
-                    <th scope="col">Name</th>
+                    <th scope="col">Kit Name</th>
+                    <th scope="col">Item Name</th>
+                    <th scope="col">Item Qty</th>
                     <th scope="col">Action</th>
                 </tr>
                 </thead>
                 <tbody>
-                {% for kit in object_list %}
+                {% for kit_item in kit_items %}
                     <tr>
-                        <td>{{ kit.updated_date | date:"n/j/y h:i A" }}</td>
-                        <td>{{ kit.name}}</td>
+                        <td>{{ kit_item.kit.name }}</td>
+                        <td>{{ kit_item.item.name }}</td>
+                        <td>{{ kit_item.quantity }}</td>
                         <td>
                             <a class="btn btn-info btn-sm mr-2"
                                href="{% url 'dashboard-kit-edit' kit.id %}">Edit</a>

@@ -7,51 +7,52 @@
     {% include 'partials/topside.html' %}
 
     <div class="row my-4">
-    <div class="col md-4">
-        <div class="card card-body">
-            <h5>Add Kit</h5>
-            <hr>
-            <div class='{% if object.id %}col-12 col-md-8 {% else %} col-md-12 mx-auto {% endif %}'>
-                {% include 'partials/forms.html' %}
-            </div>
-            <div id='kit-items-list'>
-                {% for kit_item in object.get_items_in_kit %}
-                    {% include 'partials/kit-item-inline.html' with object=kit_item %}
-                {% endfor %}
-            </div>
+        <div class="col md-4">
+            <div class="card card-body">
+                <h5>Add Kit</h5>
+                <hr>
+                <div class='{% if object.id %}col-12 col-md-8 {% else %} col-md-12 mx-auto {% endif %}'>
+                    {% include 'partials/forms.html' %}
+                </div>
+                <div id='kit-items-list'>
+                    {% for kit_item in object.get_items_in_kit %}
+                        {% include 'partials/kit-item-inline.html' with object=kit_item %}
+                    {% endfor %}
+                </div>
 
-            {% if new_kit_item_url %}
-                <button hx-get='{{ new_kit_item_url }}'
-                        hx-trigger='click'
-                        hx-target='#kit-items-list'
-                        hx-swap='beforeend'>Add kit item</button>
-            {% endif %}
+                {% if new_kit_item_url %}
+                    <button hx-get='{{ new_kit_item_url }}'
+                            hx-trigger='click'
+                            hx-target='#kit-items-list'
+                            hx-swap='beforeend'>Add kit item</button>
+                {% endif %}
+            </div>
         </div>
-    </div>
 
-    <div class="col-md-8">
-        <table class="table bg-white">
-            <thead class="bg-info text-white">
-            <tr>
-                <th scope="col">Date</th>
-                <th scope="col">Name</th>
-                <th scope="col">Action</th>
-            </tr>
-            </thead>
-            <tbody>
-            {% for kit in object_list %}
+        <div class="col-md-8">
+            <table class="table bg-white">
+                <thead class="bg-info text-white">
                 <tr>
-                    <td>{{ kit.updated_date | date:"n/j/y h:i A" }}</td>
-                    <td>{{ kit.name}}</td>
-                    <td>
-                        <a class="btn btn-info btn-sm mr-2"
-                           href="{% url 'dashboard-kit-edit' kit.id %}">Edit</a>
-                        <a class="btn btn-danger btn-sm ml-2"
-                           href="{% url 'dashboard-kit-delete' kit.id %}">Delete</a>
-                    </td>
+                    <th scope="col">Kit Name</th>
+                    <th scope="col">Item Name</th>
+                    <th scope="col">Item Qty</th>
+                    <th scope="col">Action</th>
                 </tr>
-            {% endfor %}
-            </tbody>
-        </table>
-    </div>
+                </thead>
+                <tbody>
+                {% for kit_item in kit_items %}
+                    <tr>
+                        <td>{{ kit_item.kit.name }}</td>
+                        <td>{{ kit_item.item.name }}</td>
+                        <td>{{ kit_item.quantity }}</td>
+                        <td>
+                            <a class="btn btn-info btn-sm mr-2"
+                               href="{% url 'kit-edit' kit_item.kit.id %}">Edit</a>
+                            <a class="btn btn-danger btn-sm ml-2"
+                               href="{% url 'kit-delete' kit_item.kit.id %}">Delete</a>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
 {% endblock content %}
