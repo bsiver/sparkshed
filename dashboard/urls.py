@@ -14,6 +14,7 @@ urlpatterns = [
     path('order/detail/<int:pk>/', views.order_edit, name='dashboard-order-edit'),
     path('kit/', views.create_kit, name='kits'),
     path('kit/create/', views.create_kit, name='kit-create'),
+    path('kit/order/', views.kit_order, name='kit-order-create'),
     path('kit/delete/<int:id>/', views.kit_delete, name='kit-delete'),
     path('kit/edit/<int:id>/', views.kit_update, name='kit-edit'),
     path('kit/detail/<int:id>/', views.kit_detail, name='kit-detail'),

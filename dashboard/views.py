@@ -4,19 +4,21 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.http import Http404
-from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from django.shortcuts import redirect
 from django.shortcuts import render
 from django.urls import reverse
 
 from .forms import ItemForm
+from .forms import ItemOrderForm
 from .forms import KitForm
 from .forms import KitItemForm
-from .forms import OrderForm
+from .forms import KitOrderForm
 from .models import Item
+from .models import ItemOrder
 from .models import Kit
 from .models import KitItem
+from .models import KitOrder
 from .models import Order
 
 logger = logging.getLogger(__name__)
@@ -112,35 +114,52 @@ def item_delete(request, pk):
 
 #@login_required(login_url='user-login')
 def order(request):
-    order = Order.objects.all()
+    kit_orders = list(KitOrder.objects.all())
+    item_orders = list(ItemOrder.objects.all())
 
-    if request.method == 'POST':
-        form = OrderForm(request.POST)
-        if form.is_valid():
-            obj = form.save(commit=False)
-            obj.customer = request.user
-            obj.save()
-            return redirect('dashboard-order')
-    else:
-        form = OrderForm()
+    # if request.method == 'POST':
+    #     logger.info(request.POST)
+    #     kit_form = KitOrderForm(request.POST)
+    #     item_form = None
+    #     if kit_form.is_valid():
+    #         obj = kit_form.save(commit=False)
+    #         obj.customer = request.user
+    #         obj.save()
+    #         return redirect('dashboard-order')
+    kit_form = KitOrderForm()
+    item_form = ItemOrderForm()
 
     context = {
-        'form': form,
-        'order': order,
+        'item_form': item_form,
+        'kit_form': kit_form,
+        'new_kit_order_url': reverse('kit-order-create'),
+        'item_orders': item_orders,
+        'kit_orders': kit_orders
     }
     return render(request, 'dashboard/order.html', context)
+
+#@login_required(login_url='user-login')
+def kit_order(request):
+    form = KitOrderForm(request.POST or None)
+    if form.is_valid():
+        obj = form.save(commit=False)
+        obj.customer = request.user
+        obj.save()
+        if request.htmx:
+            return render(request)
+    return redirect('dashboard-order')
 
 @login_required(login_url='user-login')
 #@allowed_users(allowed_roles=['Admin'])
 def order_edit(request, pk):
-    order = Order.objects.get(id=pk)
+    order = KitOrder.objects.get(id=pk)
     if request.method == 'POST':
-        form = OrderForm(request.POST, instance=order)
+        form = KitOrderForm(request.POST, instance=order)
         if form.is_valid():
             form.save()
             return redirect('dashboard-order')
     else:
-        form = OrderForm(instance=order)
+        form = KitOrderForm(instance=order)
     context = {
         'form': form
     }

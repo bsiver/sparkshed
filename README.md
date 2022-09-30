@@ -9,11 +9,13 @@ An inventory management system that allows for the creation of Items, Kits, Orde
 
 ### To-do
 
-- [ ] Update kit page list view
-- [ ] Implement ordering of kits and items
+- [x] Update kit page list view
+- [x] Implement ordering of kits and items
 - [ ] Implement deliveries
 - [ ] Fix inconsistent styling
 - [ ] Update dashboard with something useful
+- [ ] Fix kit item deletion so delete happens at item level
+- [ ] Add card highlighting to dashboard stats
 
 ### License
 
