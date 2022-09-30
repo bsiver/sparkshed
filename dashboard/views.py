@@ -277,7 +277,7 @@ def create_kit_item(request, parent_id=None, id=None):
 def delete_kit_item(request, parent_id=None, id=None):
     kit_item = get_object_or_404(KitItem, kit__id=parent_id, id=id)
     if request.method == "POST":
-        name = kit_item.name
+        name = kit_item.item.name
         kit_item.delete()
         success_url = reverse('kit-detail', kwargs={"id": parent_id})
         if request.htmx:

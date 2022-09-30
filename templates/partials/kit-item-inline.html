@@ -1,7 +1,22 @@
 <div id="kititem-{{ object.id }}">
-    {{ object.item.name }} {{ object.quantity }}
-    <button hx-trigger='click' hx-get='{{ object.get_hx_edit_url }}' hx-target="#kititem-{{ object.id}}" >Edit</button>
+    <div class="row my-2">
+        <div class="col-md">
+            {{ object.item.name }}
+        </div>
+        <div class="col-sm">
+            {{ object.quantity }}
+        </div>
 
-    <a hx-post='{{ object.get_delete_url }}' hx-confirm='Delete item?' hx-trigger='click' href='{{ object.get_delete_url }}'
-    hx-target='#kititem-{{ object.id }}' hx-swap='outerHTML'>Remove</a>
+        <div class="col-sm">
+            <button class="btn btn-success btn-sm"
+                    hx-trigger='click'
+                    hx-get='{{ object.get_hx_edit_url }}'
+                    hx-target="#kititem-{{ object.id}}" >Edit</button>
+        </div>
+
+        <div class="col-sm">
+            <a class="btn btn-danger btn-sm" hx-post='{{ object.get_delete_url }}' hx-confirm='Delete item?' hx-trigger='click' href='{{ object.get_delete_url }}'
+               hx-target='#kititem-{{ object.id }}' hx-swap='outerHTML'>Remove</a>
+        </div>
+    </div>
 </div>

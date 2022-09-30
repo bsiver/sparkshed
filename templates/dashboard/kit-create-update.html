@@ -4,7 +4,7 @@
 {% load crispy_forms_tags %}
 
 {% block content %}
-    {% include 'partials/topside.html' %}
+{% include 'partials/topside.html' %}
 
     <div class="row my-4">
         <div class="col md-4">
@@ -21,7 +21,8 @@
                 </div>
 
                 {% if new_kit_item_url %}
-                    <button hx-get='{{ new_kit_item_url }}'
+                    <button class="btn btn-success"
+                            hx-get='{{ new_kit_item_url }}'
                             hx-trigger='click'
                             hx-target='#kit-items-list'
                             hx-swap='beforeend'>Add kit item</button>

@@ -13,7 +13,8 @@
 {% endfor %}
 <div id='kit-item-create'>
 </div>
-<button hx-get="{{ new_kit_item_url }}"
+<button class="btn btn-success mt-4"
+        hx-get="{{ new_kit_item_url }}"
         hx-trigger='click'
         hx-target='#kit-item-create'
         hx-swap='beforeend'>Add kit item</button>
