@@ -120,6 +120,7 @@ def order(request):
         'item_form': item_form,
         'kit_form': kit_form,
         'new_kit_order_url': reverse('kit-order-create'),
+        'new_item_order_url': reverse('item-order-create'),
         'item_orders': item_orders,
         'kit_orders': kit_orders
     }
@@ -128,7 +129,21 @@ def order(request):
 
 @login_required(login_url='user-login')
 def kit_order(request):
-    form = KitOrderForm(request.POST or None)
+    return _create_order(request, 'kit')
+
+
+@login_required(login_url='user-login')
+def item_order(request):
+    return _create_order(request, 'item')
+
+
+def _create_order(request, order_type):
+    if order_type == 'item':
+        form = ItemOrderForm(request.POST or None)
+    elif order_type == 'kit':
+        form = KitOrderForm(request.POST or None)
+    else:
+        raise Http404()
     if form.is_valid():
         obj = form.save(commit=False)
         obj.customer = request.user
@@ -139,15 +154,18 @@ def kit_order(request):
 
 
 @login_required(login_url='user-login')
-def order_edit(request, pk):
-    order = KitOrder.objects.get(id=pk)
-    if request.method == 'POST':
-        form = KitOrderForm(request.POST, instance=order)
-        if form.is_valid():
-            form.save()
-            return redirect('dashboard-order')
-    else:
+def order_edit(request, type, pk):
+    if type == 'kit':
+        order = KitOrder.objects.get(id=pk)
         form = KitOrderForm(instance=order)
+    elif type == 'item':
+        order = ItemOrder.objects.get(id=pk)
+        form = ItemOrderForm(instance=order)
+    else:
+        return Http404()
+    if request.method == 'POST' and form.is_valid():
+        form.save()
+        return redirect('dashboard-order')
     context = {
         'form': form
     }
@@ -155,8 +173,13 @@ def order_edit(request, pk):
 
 
 @login_required(login_url='user-login')
-def order_delete(request, pk):
-    order = Order.objects.get(id=pk)
+def order_delete(request, type, pk):
+    if type == 'kit':
+        order = KitOrder.objects.get(id=pk)
+    elif type == 'item':
+        order = ItemOrder.objects.get(id=pk)
+    else:
+        return Http404()
     if request.method == 'POST':
         order.delete()
         return redirect('dashboard-order')

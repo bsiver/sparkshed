@@ -52,9 +52,9 @@
                                             <td>{{ order.customer.username }}</td>
                                             <td>
                                                 <a class="btn btn-info btn-sm mr-2"
-                                                   href="{% url 'dashboard-order-edit' order.id %}">Edit</a>
+                                                   href="{% url 'dashboard-order-edit' type='kit' pk=order.id %}">Edit</a>
                                                 <a class="btn btn-danger btn-sm ml-2"
-                                                   href="{% url 'dashboard-order-delete' order.id %}">Delete</a>
+                                                   href="{% url 'dashboard-order-delete' type='kit' pk=order.id %}">Delete</a>
                                             </td>
                                         </tr>
                                     {% endfor %}
@@ -70,7 +70,7 @@
                                 <div class="card card-body">
                                     <h5>Add Item Order</h5>
                                     <hr>
-                                    <form method="POST">
+                                    <form method="POST" action={{ new_item_order_url }}>
                                         {% csrf_token %}
                                         {{ item_form|crispy }}
                                         <input class="btn btn-success btn-block" type="submit" value="Add">
@@ -92,14 +92,14 @@
                                     {% for order in item_orders %}
                                         <tr>
                                             <td>{{ order.updated_date | date:"n/j/y h:i A" }}</td>
-                                            <td>{{ order.kit.name }}</td>
+                                            <td>{{ order.item.name }}</td>
                                             <td>{{ order.order_quantity }}</td>
                                             <td>{{ order.customer.username }}</td>
                                             <td>
                                                 <a class="btn btn-info btn-sm mr-2"
-                                                   href="{% url 'dashboard-order-edit' order.id %}">Edit</a>
+                                                   href="{% url 'dashboard-order-edit' type='item' pk=order.id %}">Edit</a>
                                                 <a class="btn btn-danger btn-sm ml-2"
-                                                   href="{% url 'dashboard-order-delete' order.id %}">Delete</a>
+                                                   href="{% url 'dashboard-order-delete' type='item' pk=order.id %}">Delete</a>
                                             </td>
                                         </tr>
                                     {% endfor %}
