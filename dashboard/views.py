@@ -63,7 +63,6 @@ def item_detail(request, pk):
 
 
 @login_required(login_url='user-login')
-#@allowed_users(allowed_roles=['Admin'])
 def customers(request):
     customer = User.objects.all()
     context = {
@@ -73,7 +72,6 @@ def customers(request):
 
 
 @login_required(login_url='user-login')
-#@allowed_users(allowed_roles=['Admin'])
 def customer_detail(request, pk):
     customers = User.objects.all()
     context = {
@@ -83,7 +81,6 @@ def customer_detail(request, pk):
 
 
 @login_required(login_url='user-login')
-#@allowed_users(allowed_roles=['Admin'])
 def item_edit(request, pk):
     item = Item.objects.get(id=pk)
     if request.method == 'POST':
@@ -100,7 +97,6 @@ def item_edit(request, pk):
 
 
 @login_required(login_url='user-login')
-#@allowed_users(allowed_roles=['Admin'])
 def item_delete(request, pk):
     item = Item.objects.get(id=pk)
     if request.method == 'POST':
@@ -112,20 +108,11 @@ def item_delete(request, pk):
     return render(request, 'dashboard/items_delete.html', context)
 
 
-#@login_required(login_url='user-login')
+@login_required(login_url='user-login')
 def order(request):
     kit_orders = list(KitOrder.objects.all())
     item_orders = list(ItemOrder.objects.all())
 
-    # if request.method == 'POST':
-    #     logger.info(request.POST)
-    #     kit_form = KitOrderForm(request.POST)
-    #     item_form = None
-    #     if kit_form.is_valid():
-    #         obj = kit_form.save(commit=False)
-    #         obj.customer = request.user
-    #         obj.save()
-    #         return redirect('dashboard-order')
     kit_form = KitOrderForm()
     item_form = ItemOrderForm()
 
@@ -138,7 +125,8 @@ def order(request):
     }
     return render(request, 'dashboard/order.html', context)
 
-#@login_required(login_url='user-login')
+
+@login_required(login_url='user-login')
 def kit_order(request):
     form = KitOrderForm(request.POST or None)
     if form.is_valid():
@@ -149,8 +137,8 @@ def kit_order(request):
             return render(request)
     return redirect('dashboard-order')
 
+
 @login_required(login_url='user-login')
-#@allowed_users(allowed_roles=['Admin'])
 def order_edit(request, pk):
     order = KitOrder.objects.get(id=pk)
     if request.method == 'POST':
@@ -165,8 +153,8 @@ def order_edit(request, pk):
     }
     return render(request, 'dashboard/order_edit.html', context)
 
+
 @login_required(login_url='user-login')
-#@allowed_users(allowed_roles=['Admin'])
 def order_delete(request, pk):
     order = Order.objects.get(id=pk)
     if request.method == 'POST':
@@ -230,7 +218,6 @@ def kit_update(request, id=None):
 
 
 @login_required(login_url='user-login')
-#@allowed_users(allowed_roles=['Admin'])
 def kit_delete(request, id):
     kit = Kit.objects.get(id=id)
     if request.method == 'POST':
@@ -240,6 +227,7 @@ def kit_delete(request, id):
         'kit': kit
     }
     return render(request, 'dashboard/kit_delete.html', context)
+
 
 @login_required()
 def create_kit_item(request, parent_id=None, id=None):
