@@ -1,4 +1,5 @@
 {% extends 'partials/base.html' %}
+{% load crispy_forms_filters %}
 {% block title %}Order Page{% endblock %}
 {% load crispy_forms_tags %}
 
@@ -53,8 +54,14 @@
                                             <td>
                                                 <a class="btn btn-info btn-sm mr-2"
                                                    href="{% url 'dashboard-order-edit' type='kit' pk=order.id %}">Edit</a>
-                                                <a class="btn btn-danger btn-sm ml-2"
+                                                <a class="btn btn-danger btn-sm ml-2 mr-2"
                                                    href="{% url 'dashboard-order-delete' type='kit' pk=order.id %}">Delete</a>
+                                                <button hx-get="{% url 'delivery-create' type='kit' order_id=order.id %}"
+                                                        class="btn btn-primary btn-sm ml-2"
+                                                        hx-target="#user-err">
+                                                    Deliver
+                                                </button>
+                                                <div class="text-danger mt-2" style="color:red;" id="user-err"></div>
                                             </td>
                                         </tr>
                                     {% endfor %}
@@ -112,5 +119,26 @@
             </div>
         </div>
     </div>
+
+    <div class="position-fixed top-0 end-0 p-3">
+        <div id="toast" class="toast align-items-center text-white bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="d-flex">
+                <div id="toast-body" class="toast-body"></div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const toastElement = document.getElementById("toast")
+        const toastBody = document.getElementById("toast-body")
+
+        const toast = new bootstrap.Toast(toastElement, { delay: 5000 })
+
+        htmx.on("showMessage", (e) => {
+            toastBody.innerText = e.detail.value
+            toast.show()
+        })
+    </script>
 
 {% endblock %}

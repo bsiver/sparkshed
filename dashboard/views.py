@@ -1,25 +1,32 @@
+import json
 import logging
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
+from django.core.exceptions import ValidationError
 from django.http import Http404
+from django.http import HttpResponse
+from django.http import HttpResponseBadRequest
 from django.shortcuts import get_object_or_404
 from django.shortcuts import redirect
 from django.shortcuts import render
 from django.urls import reverse
 
+from .forms import ItemDeliveryForm
 from .forms import ItemForm
 from .forms import ItemOrderForm
+from .forms import KitDeliveryForm
 from .forms import KitForm
 from .forms import KitItemForm
 from .forms import KitOrderForm
 from .models import Item
+from .models import ItemDelivery
 from .models import ItemOrder
 from .models import Kit
+from .models import KitDelivery
 from .models import KitItem
 from .models import KitOrder
-from .models import Order
 
 logger = logging.getLogger(__name__)
 
@@ -27,9 +34,10 @@ logger = logging.getLogger(__name__)
 @login_required(login_url='user-login')
 def index(request):
     items = Item.objects.all()
-    order = Order.objects.all()
+    kit_orders = KitOrder.objects.all()
+    item_orders = ItemOrder.objects.all()
     context = {
-        'order': order,
+        'order': kit_orders.union(item_orders),
         'items': items,
     }
     return render(request, 'dashboard/index.html', context)
@@ -157,10 +165,10 @@ def _create_order(request, order_type):
 def order_edit(request, type, pk):
     if type == 'kit':
         order = KitOrder.objects.get(id=pk)
-        form = KitOrderForm(instance=order)
+        form = KitOrderForm(request.POST, instance=order)
     elif type == 'item':
         order = ItemOrder.objects.get(id=pk)
-        form = ItemOrderForm(instance=order)
+        form = ItemOrderForm(request.POST, instance=order)
     else:
         return Http404()
     if request.method == 'POST' and form.is_valid():
@@ -298,3 +306,102 @@ def delete_kit_item(request, parent_id=None, id=None):
         "object": kit_item
     }
     return render(request, "dashboard/kit_delete.html", context)
+
+
+@login_required(login_url='user-login')
+def delivery(request):
+    kit_deliveries = list(KitDelivery.objects.all())
+    item_deliveries = list(ItemDelivery.objects.all())
+
+    kit_form = KitDeliveryForm()
+    item_form = ItemDeliveryForm()
+
+    context = {
+        'item_form': item_form,
+        'kit_form': kit_form,
+        'item_deliveries': item_deliveries,
+        'kit_deliveries': kit_deliveries
+    }
+    return render(request, 'dashboard/delivery.html', context)
+
+
+@login_required(login_url='user-login')
+def create_delivery(request, type, order_id):
+    return _create_delivery(request, order_id, type)
+
+
+def _create_delivery(request, order_id, delivery_type):
+    if delivery_type == 'item':
+        order = get_object_or_404(ItemOrder, id=order_id)
+        delivery = ItemDelivery(item=order.item, order=order)
+        form = ItemDeliveryForm(instance=delivery)
+    elif delivery_type == 'kit':
+        order = get_object_or_404(KitOrder, id=order_id)
+        delivery = KitDelivery(kit=order.kit, order=order)
+        form = KitDeliveryForm(request.GET, instance=delivery)
+    else:
+        raise Http404()
+
+    if not form.is_valid():
+        return HttpResponseBadRequest(headers={
+            'HX-Trigger': json.dumps({
+                "showMessage": f"{form.errors}"
+            })
+        })
+
+
+    obj = form.save(commit=False)
+    obj.customer = request.user
+    obj.clean()
+    obj.save()
+    if request.htmx:
+        return HttpResponse(
+            status=200,
+            headers={
+                'HX-Trigger': json.dumps({
+                    "showMessage": f"Delivery created!"
+                })
+            })
+    else:
+        logger.info(f"Form errors: {form.errors}")
+        return HttpResponseBadRequest(headers={
+            'HX-Trigger': json.dumps({
+                "showMessage": f"{form.errors}"
+            })
+        })
+
+
+@login_required(login_url='user-login')
+def delivery_edit(request, type, pk):
+    if type == 'kit':
+        delivery = KitDelivery.objects.get(id=pk)
+        form = KitDeliveryForm(request.POST, instance=delivery)
+    elif type == 'item':
+        delivery = ItemDelivery.objects.get(id=pk)
+        form = ItemDeliveryForm(request.POST, instance=delivery)
+    else:
+        return Http404()
+    if request.method == 'POST' and form.is_valid():
+        form.save()
+        return redirect('dashboard-delivery')
+    context = {
+        'form': form
+    }
+    return render(request, 'dashboard/delivery_edit.html', context)
+
+
+@login_required(login_url='user-login')
+def delivery_delete(request, type, pk):
+    if type == 'kit':
+        delivery = KitDelivery.objects.get(id=pk)
+    elif type == 'item':
+        delivery = ItemDelivery.objects.get(id=pk)
+    else:
+        return Http404()
+    if request.method == 'POST':
+        delivery.delete()
+        return redirect('deliveries')
+    context = {
+        'delivery': delivery
+    }
+    return render(request, 'dashboard/delivery_delete.html', context)

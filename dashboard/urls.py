@@ -10,9 +10,19 @@ urlpatterns = [
     path('items/order/', views.item_order, name='item-order-create'),
     path('customers/', views.customers, name='dashboard-customers'),
     path('customers/detial/<int:pk>/', views.customer_detail, name='dashboard-customer-detail'),
+
+    # orders
     path('order/', views.order, name='dashboard-order'),
     path('order/delete/<str:type>/<int:pk>/', views.order_delete, name='dashboard-order-delete'),
     path('order/detail/<str:type>/<int:pk>/', views.order_edit, name='dashboard-order-edit'),
+
+    # deliveries
+    path('deliveries/', views.delivery, name='deliveries'),
+    path('delivery/delete/<str:type>/<int:pk>/', views.delivery_delete, name='delivery-delete'),
+    path('delivery/detail/<str:type>/<int:pk>/', views.delivery_edit, name='delivery-edit'),
+    path('delivery/<str:type>/<int:order_id>/', views.create_delivery, name='delivery-create'),
+
+    # kits
     path('kit/', views.create_kit, name='kits'),
     path('kit/create/', views.create_kit, name='kit-create'),
     path('kit/order/', views.kit_order, name='kit-order-create'),

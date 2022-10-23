@@ -1,7 +1,11 @@
 from django import forms
+from django.core.exceptions import ValidationError
+
 from dashboard.models import Item
+from dashboard.models import ItemDelivery
 from dashboard.models import ItemOrder
 from dashboard.models import Kit
+from dashboard.models import KitDelivery
 from dashboard.models import KitItem
 from dashboard.models import KitOrder
 
@@ -32,9 +36,39 @@ class KitOrderForm(forms.ModelForm):
         fields = ['kit', 'order_quantity']
 
 
-
 class KitItemForm(forms.ModelForm):
 
     class Meta:
         model = KitItem
         fields = ['item', 'quantity']
+
+
+class KitDeliveryForm(forms.ModelForm):
+
+    class Meta:
+        model = KitDelivery
+        fields = ['kit', 'order']
+
+    def clean(self):
+        import logging
+        logger = logging.getLogger(__name__)
+        logger.info('in clean')
+
+        cleaned_data = super(KitDeliveryForm, self).clean()
+
+        for kit_item in self.instance.kit.get_items_in_kit():
+            items_in_stock = kit_item.item.quantity
+            items_required = kit_item.quantity * self.instance.order.order_quantity
+            if items_in_stock < items_required:
+                self.add_error('kit', f"Insufficient {kit_item.item.name} items in stock to fulfill order "
+                               f"({items_in_stock}/{items_required} in stock)")
+        return cleaned_data
+
+
+
+
+class ItemDeliveryForm(forms.ModelForm):
+
+    class Meta:
+        model = ItemDelivery
+        fields = ['item', 'order']

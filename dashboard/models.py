@@ -1,6 +1,8 @@
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.db import connection
 from django.contrib.auth.models import User
+from django.db.models import Manager
 from django.urls import reverse
 
 from dashboard.helpers import namedtuplefetchall
@@ -109,3 +111,24 @@ class KitOrder(Order):
 
 class ItemOrder(Order):
     item = models.ForeignKey(Item, on_delete=models.CASCADE)
+
+
+class Delivery(models.Model):
+    delivery_date = models.DateTimeField(editable=False, auto_now=True)
+
+    class Meta:
+        abstract = True
+
+
+class ItemDelivery(Delivery):
+    item = models.ForeignKey(Item, on_delete=models.CASCADE)
+    order = models.ForeignKey(ItemOrder, on_delete=models.CASCADE)
+
+    def clean(self):
+        if self.item.quantity < self.order.order_quantity:
+            raise ValidationError(f"{self.item.name} quantity cannot exceed amount in stock ({self.item.quantity})")
+
+
+class KitDelivery(Delivery):
+    kit = models.ForeignKey(Kit, on_delete=models.CASCADE)
+    order = models.ForeignKey(KitOrder, on_delete=models.CASCADE)

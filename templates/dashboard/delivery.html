@@ -1,0 +1,40 @@
+{% extends 'partials/base.html' %}
+{% block title %}Order Page{% endblock %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+    {% include 'partials/topside.html' %}
+
+
+    <div class="row my-4">
+        <div class="col-md-12">
+            <table class="table bg-white">
+                <thead class="bg-info text-white">
+                <tr>
+                    <th scope="col">Date</th>
+                    <th scope="col">Product</th>
+                    <th scope="col">Quantity</th>
+                    <th scope="col">Ordered by</th>
+                    <th scope="col">Action</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for delivery in kit_deliveries %}
+                    <tr>
+                        <td>{{ delivery.delivery_date | date:"n/j/y h:i A" }}</td>
+                        <td>{{ delivery.order.kit.name }}</td>
+                        <td>{{ delivery.order.order_quantity }}</td>
+                        <td>{{ delivery.order.customer.username }}</td>
+                        <td>
+                            <a class="btn btn-info btn-sm mr-2"
+                               href="{% url 'delivery-edit' type='kit' pk=delivery.id %}">Edit</a>
+                            <a class="btn btn-danger btn-sm ml-2"
+                               href="{% url 'delivery-delete' type='kit' pk=delivery.id %}">Delete</a>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% endblock %}
