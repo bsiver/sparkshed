@@ -4,7 +4,6 @@ import logging
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
-from django.core.exceptions import ValidationError
 from django.http import Http404
 from django.http import HttpResponse
 from django.http import HttpResponseBadRequest
@@ -147,18 +146,31 @@ def item_order(request):
 
 def _create_order(request, order_type):
     if order_type == 'item':
-        form = ItemOrderForm(request.POST or None)
+        form = ItemOrderForm(request.POST)
     elif order_type == 'kit':
-        form = KitOrderForm(request.POST or None)
+        form = KitOrderForm(request.POST)
     else:
         raise Http404()
     if form.is_valid():
         obj = form.save(commit=False)
         obj.customer = request.user
         obj.save()
-        if request.htmx:
-            return render(request)
-    return redirect('dashboard-order')
+
+    kit_orders = list(KitOrder.objects.all())
+    item_orders = list(ItemOrder.objects.all())
+
+    item_form = ItemOrderForm()
+
+    context = {
+        'item_form': item_form,
+        'kit_form': form,
+        'new_kit_order_url': reverse('kit-order-create'),
+        'new_item_order_url': reverse('item-order-create'),
+        'item_orders': item_orders,
+        'kit_orders': kit_orders
+    }
+
+    return render(request, 'dashboard/order.html', context)
 
 
 @login_required(login_url='user-login')

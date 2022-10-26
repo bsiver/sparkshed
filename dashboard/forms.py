@@ -35,6 +35,17 @@ class KitOrderForm(forms.ModelForm):
         model = KitOrder
         fields = ['kit', 'order_quantity']
 
+    def clean(self):
+        kit = self.cleaned_data.get('kit')
+        order_quantity = self.cleaned_data.get('order_quantity')
+        for kit_item in kit.get_items_in_kit():
+            items_in_stock = kit_item.item.quantity
+            items_required = kit_item.quantity * order_quantity
+            if items_in_stock < items_required:
+                self.add_error('order_quantity', f"Insufficient {kit_item.item.name} in stock to fulfill order "
+                               f"({items_in_stock}/{items_required}) in stock")
+        return self.cleaned_data
+
 
 class KitItemForm(forms.ModelForm):
 

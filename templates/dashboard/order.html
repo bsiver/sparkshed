@@ -4,7 +4,7 @@
 {% load crispy_forms_tags %}
 
 {% block content %}
-    {% include 'partials/topside.html' %}
+{% include 'partials/topside.html' %}
 
     <div class="row my-4">
         <div class="container">
@@ -28,7 +28,8 @@
                                     <hr>
                                     <form method="POST" action={{ new_kit_order_url }}>
                                         {% csrf_token %}
-                                        {{ kit_form|crispy }}
+                                        {{ kit_form | as_crispy_errors }}
+                                        {{ kit_form | crispy }}
                                         <input class="btn btn-success btn-block" type="submit" value="Add">
                                     </form>
                                 </div>
