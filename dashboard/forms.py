@@ -37,8 +37,10 @@ class KitOrderForm(forms.ModelForm):
         fields = ['kit', 'order_quantity']
 
     def clean(self):
+        super(KitOrderForm, self).clean()
         kit = self.cleaned_data.get('kit')
         order_quantity = self.cleaned_data.get('order_quantity')
+
         for kit_item in kit.get_items_in_kit():
             items_in_stock = kit_item.item.quantity
             items_required = kit_item.quantity * order_quantity

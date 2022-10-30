@@ -176,8 +176,8 @@ def _create_order(request, order_type):
 @login_required(login_url='user-login')
 def order_edit(request, type, pk):
     if type == 'kit':
-        order = KitOrder.objects.get(id=pk)
-        form = KitOrderForm(request.POST, instance=order)
+        order = get_object_or_404(KitOrder, id=pk)
+        form = KitOrderForm({'order_quantity': order.order_quantity}, instance=order)
     elif type == 'item':
         order = ItemOrder.objects.get(id=pk)
         form = ItemOrderForm(request.POST, instance=order)
@@ -373,8 +373,8 @@ def _create_delivery(request, order_id, delivery_type):
 @login_required(login_url='user-login')
 def delivery_edit(request, type, pk):
     if type == 'kit':
-        delivery = KitDelivery.objects.get(id=pk)
-        form = KitDeliveryForm(request.POST, instance=delivery)
+        delivery = get_object_or_404(KitDelivery, id=pk)
+        form = KitDeliveryForm({'kit': delivery.kit, 'order': delivery.order}, instance=delivery)
     elif type == 'item':
         delivery = ItemDelivery.objects.get(id=pk)
         form = ItemDeliveryForm(request.POST, instance=delivery)

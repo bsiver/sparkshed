@@ -42,6 +42,7 @@
                                         <th scope="col">Product</th>
                                         <th scope="col">Quantity</th>
                                         <th scope="col">Ordered by</th>
+                                        <th scope="col">Delivered</th>
                                         <th scope="col">Action</th>
                                     </tr>
                                     </thead>
@@ -53,21 +54,25 @@
                                             <td>{{ order.order_quantity }}</td>
                                             <td>{{ order.customer.username }}</td>
                                             <td>
+                                                {% if order.is_delivered %}
+                                                    <a class="fa-solid fa-square-check"></a>
+                                                {% else %}
+                                                    <a class="fa-solid fa-square-xmark"></a>
+                                                {% endif %}
+                                            </td>
+                                            <td>
                                                 <a class="btn btn-info btn-sm mr-2"
                                                    href="{% url 'dashboard-order-edit' type='kit' pk=order.id %}">Edit</a>
                                                 <a class="btn btn-danger btn-sm ml-2 mr-2"
                                                    href="{% url 'dashboard-order-delete' type='kit' pk=order.id %}">Delete</a>
-                                                <a class="btn btn-primary btn-sm mr-2">
-                                                    <form hx-post='{{ order.get_deliver_url }}'
+                                                <form class="btn btn-primary btn-sm mr-2" hx-post='{{ order.get_deliver_url }}'
                                                           method="POST"
                                                           action="."
                                                           hx-confirm='Deliver order?'
                                                           hx-trigger='click'
                                                           hx-target='#user-err'>
-                                                    </form>
-                                                    Deliver
-                                                </a>
-
+                                                    <a>Deliver</a>
+                                                </form>
                                                 <div class="text-danger mt-2" style="color:red;" id="user-err"></div>
                                             </td>
                                         </tr>

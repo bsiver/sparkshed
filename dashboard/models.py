@@ -22,7 +22,9 @@ class Item(models.Model):
             JOIN dashboard_kit k ON ko.kit_id = k.id
             JOIN dashboard_kititem ki on ko.kit_id = k.id
             JOIN dashboard_item i ON i.id = ki.item_id
+            LEFT JOIN dashboard_kitdelivery kd ON k.id
             WHERE ki.item_id = {self.id}
+            AND kd.id IS NULL
         """
         import logging
         logger = logging.getLogger(__name__)
@@ -65,6 +67,9 @@ class Item(models.Model):
 
         return sum(
             [order.order_quantity for order in ItemDelivery.objects.filter(item__name=self.name)]) + delivered_from_kit_orders
+
+    def quantity_in_stock(self):
+        return self.quantity - self.quantity_delivered
 
 class Kit(models.Model):
     name = models.CharField(max_length=100, null=True)
@@ -137,6 +142,9 @@ class KitOrder(Order):
             "order_id": self.id
         }
         return reverse("delivery-create", kwargs=kwargs)
+
+    def is_delivered(self):
+        return KitDelivery.objects.filter(order_id=self.id).exists()
 
 
 class ItemOrder(Order):
