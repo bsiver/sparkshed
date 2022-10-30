@@ -31,7 +31,6 @@
                     <th scope="col">In Stock</th>
                     <th scope="col">Ordered</th>
                     <th scope="col">Delivered</th>
-                    <th scope="col">Remaining</th>
                     <th scope="col">Action</th>
                 </tr>
             </thead>
@@ -42,7 +41,6 @@
                     <td>{{ item.quantity_in_stock }}</td>
                     <td>{{ item.quantity_ordered }}</td>
                     <td>{{ item.quantity_delivered }}</td>
-                    <td>{{ item.quantity_remaining }}</td>
                     <td>
                         <a class="btn btn-info btn-sm mr-2"
                             href="{% url 'dashboard-items-edit' item.id %}">Edit</a>
