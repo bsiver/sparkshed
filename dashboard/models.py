@@ -2,7 +2,6 @@ from django.core.exceptions import ValidationError
 from django.db import models
 from django.db import connection
 from django.contrib.auth.models import User
-from django.db.models import Manager
 from django.urls import reverse
 
 from dashboard.helpers import namedtuplefetchall
@@ -42,6 +41,30 @@ class Item(models.Model):
     def quantity_remaining(self):
         return self.quantity - self.quantity_ordered
 
+    @property
+    def quantity_delivered(self):
+        kit_delivery_sql = f"""
+                SELECT ko.order_quantity, ki.quantity
+                FROM dashboard_kitdelivery kd
+                JOIN dashboard_kitorder ko on kd.order_id = ko.id 
+                JOIN dashboard_kit k ON kd.kit_id = k.id
+                JOIN dashboard_kititem ki on kd.kit_id = k.id
+                JOIN dashboard_item i ON i.id = ki.item_id
+                WHERE ki.item_id = {self.id}
+            """
+        import logging
+        logger = logging.getLogger(__name__)
+        logger.info(kit_delivery_sql)
+        with connection.cursor() as cursor:
+            cursor.execute(kit_delivery_sql)
+            results = namedtuplefetchall(cursor)
+
+        delivered_from_kit_orders = 0
+        if results:
+            delivered_from_kit_orders = sum([i.order_quantity * i.quantity for i in results])
+
+        return sum(
+            [order.order_quantity for order in ItemDelivery.objects.filter(item__name=self.name)]) + delivered_from_kit_orders
 
 class Kit(models.Model):
     name = models.CharField(max_length=100, null=True)
@@ -107,6 +130,13 @@ class Order(models.Model):
 
 class KitOrder(Order):
     kit = models.ForeignKey(Kit, on_delete=models.CASCADE)
+
+    def get_deliver_url(self):
+        kwargs = {
+            "type": 'kit',
+            "order_id": self.id
+        }
+        return reverse("delivery-create", kwargs=kwargs)
 
 
 class ItemOrder(Order):

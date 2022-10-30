@@ -57,11 +57,17 @@
                                                    href="{% url 'dashboard-order-edit' type='kit' pk=order.id %}">Edit</a>
                                                 <a class="btn btn-danger btn-sm ml-2 mr-2"
                                                    href="{% url 'dashboard-order-delete' type='kit' pk=order.id %}">Delete</a>
-                                                <button hx-get="{% url 'delivery-create' type='kit' order_id=order.id %}"
-                                                        class="btn btn-primary btn-sm ml-2"
-                                                        hx-target="#user-err">
+                                                <a class="btn btn-primary btn-sm mr-2">
+                                                    <form hx-post='{{ order.get_deliver_url }}'
+                                                          method="POST"
+                                                          action="."
+                                                          hx-confirm='Deliver order?'
+                                                          hx-trigger='click'
+                                                          hx-target='#user-err'>
+                                                    </form>
                                                     Deliver
-                                                </button>
+                                                </a>
+
                                                 <div class="text-danger mt-2" style="color:red;" id="user-err"></div>
                                             </td>
                                         </tr>
@@ -134,7 +140,7 @@
         const toastElement = document.getElementById("toast")
         const toastBody = document.getElementById("toast-body")
 
-        const toast = new bootstrap.Toast(toastElement, { delay: 5000 })
+        const toast = new bootstrap.Toast(toastElement, { delay: 20000 })
 
         htmx.on("showMessage", (e) => {
             toastBody.innerText = e.detail.value

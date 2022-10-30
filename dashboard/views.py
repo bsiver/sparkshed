@@ -223,7 +223,6 @@ def create_kit(request):
         obj.save()
         context['new_kit_item_url'] = reverse('kit-item-create', kwargs={"parent_id": obj.id})
         if request.htmx:
-            logger.info(f'ret {context}')
             return render(request, "partials/kit-details.html", context)
         return redirect(obj.get_absolute_url())
     return render(request, "dashboard/kit-create-update.html", context)
@@ -238,7 +237,6 @@ def kit_detail(request, id=None):
         'object': obj,
         'new_kit_item_url': reverse('kit-item-create', kwargs={'parent_id': obj.id})
     }
-    logger.info(f'ctx {context}')
     return render(request, "partials/kit-details.html", context)
 
 
@@ -274,7 +272,6 @@ def kit_delete(request, id):
 
 @login_required()
 def create_kit_item(request, parent_id=None, id=None):
-    logger.info(f'called with {parent_id} {id}')
     if not request.htmx:
         raise Http404
     kit = get_object_or_404(Kit, id=parent_id)
@@ -300,7 +297,6 @@ def create_kit_item(request, parent_id=None, id=None):
         new_obj.save()
         context['object'] = new_obj
         return render(request, "partials/kit-item-inline.html", context)
-    logger.info(f'getting ctx {context}')
     return render(request, "partials/kit-item-form.html", context)
 
 
@@ -350,7 +346,7 @@ def _create_delivery(request, order_id, delivery_type):
     elif delivery_type == 'kit':
         order = get_object_or_404(KitOrder, id=order_id)
         delivery = KitDelivery(kit=order.kit, order=order)
-        form = KitDeliveryForm(request.GET, instance=delivery)
+        form = KitDeliveryForm({'kit': order.kit, 'order': order}, instance=delivery)
     else:
         raise Http404()
 
@@ -360,7 +356,6 @@ def _create_delivery(request, order_id, delivery_type):
                 "showMessage": f"{form.errors}"
             })
         })
-
 
     obj = form.save(commit=False)
     obj.customer = request.user
@@ -374,14 +369,6 @@ def _create_delivery(request, order_id, delivery_type):
                     "showMessage": f"Delivery created!"
                 })
             })
-    else:
-        logger.info(f"Form errors: {form.errors}")
-        return HttpResponseBadRequest(headers={
-            'HX-Trigger': json.dumps({
-                "showMessage": f"{form.errors}"
-            })
-        })
-
 
 @login_required(login_url='user-login')
 def delivery_edit(request, type, pk):
