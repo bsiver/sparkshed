@@ -22,7 +22,7 @@ class Item(models.Model):
             JOIN dashboard_kit k ON ko.kit_id = k.id
             JOIN dashboard_kititem ki on ko.kit_id = k.id
             JOIN dashboard_item i ON i.id = ki.item_id
-            LEFT JOIN dashboard_kitdelivery kd ON k.id
+            LEFT JOIN dashboard_kitdelivery kd ON kd.kit_id = k.id
             WHERE ki.item_id = {self.id}
             AND kd.id IS NULL
         """
