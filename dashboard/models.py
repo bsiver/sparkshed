@@ -26,9 +26,6 @@ class Item(models.Model):
             WHERE ki.item_id = {self.id}
             AND kd.id IS NULL
         """
-        import logging
-        logger = logging.getLogger(__name__)
-        logger.info(kit_order_sql)
         with connection.cursor() as cursor:
             cursor.execute(kit_order_sql)
             results = namedtuplefetchall(cursor)
@@ -54,9 +51,6 @@ class Item(models.Model):
                 JOIN dashboard_item i ON i.id = ki.item_id
                 WHERE ki.item_id = {self.id}
             """
-        import logging
-        logger = logging.getLogger(__name__)
-        logger.info(kit_delivery_sql)
         with connection.cursor() as cursor:
             cursor.execute(kit_delivery_sql)
             results = namedtuplefetchall(cursor)
@@ -70,6 +64,7 @@ class Item(models.Model):
 
     def quantity_in_stock(self):
         return self.quantity - self.quantity_delivered
+
 
 class Kit(models.Model):
     name = models.CharField(max_length=100, null=True)
