@@ -24,13 +24,24 @@
         </div>
     </div>
     <div class="col-md-8">
-        <table class="table bg-white">
+        <table id="item-table"
+               data-toggle="table"
+               data-pagination="true"
+               data-pagination-h-align="left"
+               data-pagination-detail-h-align="right"
+               data-page-size="25"
+               data-page-list="[10, 25, 50, 100, all]"
+               data-search="true"
+               data-show-columns="true"
+               data-filter-control="true"
+               data-show-search-clear-button="true"
+               class="table bg-white">
             <thead class="bg-info text-white">
                 <tr>
-                    <th scope="col">Name</th>
-                    <th scope="col">In Stock</th>
-                    <th scope="col">Ordered</th>
-                    <th scope="col">Delivered</th>
+                    <th data-sortable="true" scope="col">Name</th>
+                    <th data-sortable="true" scope="col">In Stock</th>
+                    <th data-sortable="true" scope="col">Ordered</th>
+                    <th data-sortable="true" scope="col">Delivered</th>
                     <th scope="col">Action</th>
                 </tr>
             </thead>

@@ -35,15 +35,26 @@
                                 </div>
                             </div>
                             <div class="col-md-8">
-                                <table class="table bg-white">
+                                <table id="order-table"
+                                       data-toggle="table"
+                                       data-pagination="true"
+                                       data-pagination-h-align="left"
+                                       data-pagination-detail-h-align="right"
+                                       data-page-size="25"
+                                       data-page-list="[10, 25, 50, 100, all]"
+                                       data-search="true"
+                                       data-show-columns="true"
+                                       data-filter-control="true"
+                                       data-show-search-clear-button="true"
+                                       class="table bg-white">
                                     <thead class="bg-info text-white">
                                     <tr>
-                                        <th scope="col">Date</th>
-                                        <th scope="col">Product</th>
-                                        <th scope="col">Quantity</th>
-                                        <th scope="col">Ordered by</th>
-                                        <th scope="col">Delivered</th>
-                                        <th scope="col">Action</th>
+                                        <th data-sortable="true" scope="col">Date</th>
+                                        <th data-sortable="true" scope="col">Product</th>
+                                        <th data-sortable="true" scope="col">Quantity</th>
+                                        <th data-sortable="true" scope="col">Ordered by</th>
+                                        <th data-sortable="true" scope="col">Delivered</th>
+                                        <th data-sortable="true" scope="col">Action</th>
                                     </tr>
                                     </thead>
                                     <tbody>

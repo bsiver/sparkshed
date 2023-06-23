@@ -31,12 +31,23 @@
         </div>
 
         <div class="col-md-8">
-            <table class="table bg-white">
+            <table id="kit-create-table"
+                   data-toggle="table"
+                   data-pagination="true"
+                   data-pagination-h-align="left"
+                   data-pagination-detail-h-align="right"
+                   data-page-size="25"
+                   data-page-list="[10, 25, 50, 100, all]"
+                   data-search="true"
+                   data-show-columns="true"
+                   data-filter-control="true"
+                   data-show-search-clear-button="true"
+                   class="table bg-white">
                 <thead class="bg-info text-white">
                 <tr>
-                    <th scope="col">Kit Name</th>
-                    <th scope="col">Item Name</th>
-                    <th scope="col">Item Qty</th>
+                    <th scope="col" data-sortable="true" data-field="kit-name">Kit Name</th>
+                    <th scope="col" data-sortable="true" data-field="item-name">Item Name</th>
+                    <th scope="col" data-sortable="true" data-field="item-qty">Item Qty</th>
                     <th scope="col">Action</th>
                 </tr>
                 </thead>
