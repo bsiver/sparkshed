@@ -6,31 +6,8 @@
 {% block content %}
 {% include 'partials/topside.html' %}
 
-    <div class="row my-4">
-        <div class="col md-4">
-            <div class="card card-body">
-                <h5>Add Kit</h5>
-                <hr>
-                <div class='{% if object.id %}col-12 col-md-8 {% else %} col-md-12 mx-auto {% endif %}'>
-                    {% include 'partials/forms.html' %}
-                </div>
-                <div id='kit-items-list'>
-                    {% for kit_item in object.get_items_in_kit %}
-                        {% include 'partials/kit-item-inline.html' with object=kit_item %}
-                    {% endfor %}
-                </div>
-
-                {% if new_kit_item_url %}
-                    <button class="btn btn-success"
-                            hx-get='{{ new_kit_item_url }}'
-                            hx-trigger='click'
-                            hx-target='#kit-items-list'
-                            hx-swap='beforeend'>Add kit item</button>
-                {% endif %}
-            </div>
-        </div>
-
-        <div class="col-md-8">
+    <div class="row my-12">
+        <div class="col-md-12">
             <table id="kit-create-table"
                    data-toggle="table"
                    data-pagination="true"
@@ -67,4 +44,12 @@
                 {% endfor %}
                 </tbody>
             </table>
+        </div>
+    </div>
+
+    <div class="row my-4">
+        <a class="btn btn-info btn-sm mr-2"
+           href="{% url 'kit-create' %}">Add Kit</a>
+    </div>
+
 {% endblock content %}

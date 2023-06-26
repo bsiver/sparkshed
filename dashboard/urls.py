@@ -23,7 +23,7 @@ urlpatterns = [
     path('delivery/<str:type>/<int:order_id>/', views.create_delivery, name='delivery-create'),
 
     # kits
-    path('kit/', views.create_kit, name='kits'),
+    path('kit/', views.kit, name='kits'),
     path('kit/create/', views.create_kit, name='kit-create'),
     path('kit/order/', views.kit_order, name='kit-order-create'),
     path('kit/delete/<int:id>/', views.kit_delete, name='kit-delete'),

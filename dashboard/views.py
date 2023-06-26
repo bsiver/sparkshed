@@ -18,6 +18,7 @@ from .forms import ItemOrderForm
 from .forms import KitDeliveryForm
 from .forms import KitForm
 from .forms import KitItemForm
+from .forms import KitItemFormset
 from .forms import KitOrderForm
 from .models import Item
 from .models import ItemDelivery
@@ -210,22 +211,36 @@ def order_delete(request, type, pk):
 
 
 @login_required()
-def create_kit(request):
-    form = KitForm(request.POST or None)
+def kit(request):
     kit_items = KitItem.objects.all()
     context = {
-        'form': form,
         'kit_items': kit_items
     }
-    if form.is_valid():
-        obj = form.save(commit=False)
-        obj.customer = request.user
-        obj.save()
-        context['new_kit_item_url'] = reverse('kit-item-create', kwargs={"parent_id": obj.id})
-        if request.htmx:
-            return render(request, "partials/kit-details.html", context)
-        return redirect(obj.get_absolute_url())
-    return render(request, "dashboard/kit-create-update.html", context)
+    return render(request, "dashboard/kits.html", context)
+
+
+@login_required()
+def create_kit(request):
+    kit_items = KitItem.objects.all()
+    form = KitForm(request.POST or None)
+    formset = KitItemFormset(request.POST or None)
+
+    context = {
+        'kit_form': form,
+        'kit_items_form': formset,
+        'kit_items': kit_items
+    }
+    if request.method == 'POST' and form.is_valid() and formset.is_valid():
+        kit = form.save()
+        for kit_item in formset.forms:
+            logger.info(f"{kit_item}")
+            kit_item = kit_item.save(commit=False)
+            kit_item.kit = kit
+            kit_item.save()
+            return render(request, "dashboard/kits.html", context)
+
+    logger.info(f"returning {context}")
+    return render(request, "dashboard/kit_create.html", context)
 
 
 @login_required()
@@ -255,7 +270,7 @@ def kit_update(request, id=None):
         context['message'] = 'Data saved'
     if request.htmx:
         return render(request, 'partials/forms.html', context)
-    return render(request, 'dashboard/kit-create-update.html', context)
+    return render(request, 'dashboard/kits.html', context)
 
 
 @login_required(login_url='user-login')
@@ -281,7 +296,8 @@ def create_kit_item(request, parent_id=None, id=None):
             existing_kit_item = KitItem.objects.get(kit=kit, id=id)
         except KitItem.DoesNotExist:
             existing_kit_item = None
-    form = KitItemForm(request.POST or None, instance=existing_kit_item)
+    # form = KitItemForm(request.POST or None, instance=existing_kit_item)
+    form = KitItemForm()
     url = reverse("kit-item-create", kwargs={"parent_id": kit.id})
     if existing_kit_item:
         url = existing_kit_item.get_hx_edit_url()

@@ -1,4 +1,5 @@
 from django import forms
+from django.forms import inlineformset_factory
 
 from dashboard.models import Item
 from dashboard.models import ItemDelivery
@@ -30,6 +31,12 @@ class KitForm(forms.ModelForm):
         fields = '__all__'
 
 
+KitItemFormset = inlineformset_factory(Kit,
+                                       KitItem,
+                                       fields=['kit', 'item', 'quantity'],
+                                       extra=1,
+                                       can_delete=False)
+
 class KitOrderForm(forms.ModelForm):
 
     class Meta:
@@ -51,7 +58,6 @@ class KitOrderForm(forms.ModelForm):
 
 
 class KitItemForm(forms.ModelForm):
-
     class Meta:
         model = KitItem
         fields = ['item', 'quantity']
