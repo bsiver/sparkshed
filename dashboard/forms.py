@@ -28,17 +28,22 @@ class ItemOrderForm(forms.ModelForm):
 class KitForm(forms.ModelForm):
     class Meta:
         model = Kit
-        fields = '__all__'
+        fields = ['name']
 
 
-KitItemFormset = inlineformset_factory(Kit,
-                                       KitItem,
-                                       fields=['kit', 'item', 'quantity'],
-                                       extra=1,
-                                       can_delete=False)
+class KitItemForm(forms.ModelForm):
+    class Meta:
+        model = KitItem
+        fields = ['item', 'quantity']
+
+
+KitItemFormSet = inlineformset_factory(
+    Kit, KitItem, form=KitItemForm,
+    fields=['item', 'quantity'], extra=1, can_delete=True
+)
+
 
 class KitOrderForm(forms.ModelForm):
-
     class Meta:
         model = KitOrder
         fields = ['kit', 'order_quantity']

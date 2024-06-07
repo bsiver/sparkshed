@@ -1,19 +1,41 @@
-{% extends 'partials/base.html' %}
-{% block title %}Add Kit{% endblock %}
-{% load crispy_forms_tags %}
+{% extends 'partials/base.html' %}>
+{% load crispy_forms_filters %}
+{% block title %}Create Kit{% endblock %}
+
 
 {% block content %}
-    <div class="row my-4">
-        <div class="col-md p-3 bg-white">
-            <h3>Add Kit</h3>
-             <div id="form_set">
-                <form method="POST">
-                    {% csrf_token %}
-                    {{ kit_form|crispy }}
-                    {{ kit_items_form|crispy }}
-                    <input type="submit" value="Submit">
-                </form>
-            </div>
+<body>
+    <h1>Create Kit</h1>
+    <form method="post">
+        {% csrf_token %}
+        {{ kit_form | crispy }}
+        {{ kit_item_formset.management_form }}
+        <div id="kit_items">
+            {% for form in kit_item_formset %}
+                <div class="kit_item_form">
+                    {{ form|crispy }}
+                </div>
+            {% endfor %}
+        <button type="button" id="add_kit_item">Add another item</button>
         </div>
-    </div>
+        <button type="submit">Save Kit</button>
+    </form>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const addKitItemButton = document.getElementById('add_kit_item');
+            const kititemsContainer = document.getElementById('kit_items');
+            const totalForms = document.getElementById('id_kit_items-TOTAL_FORMS');
+
+            addKitItemButton.addEventListener('click', function () {
+                const currentFormCount = kititemsContainer.children.length;
+                const newForm = kititemsContainer.children[0].cloneNode(true);
+                const formRegex = RegExp(`-\\d+-`, 'g');
+
+                newForm.innerHTML = newForm.innerHTML.replace(formRegex, `-${currentFormCount}-`);
+                kititemsContainer.appendChild(newForm);
+                totalForms.setAttribute('value', currentFormCount + 1);
+            });
+        });
+    </script>
+</body>
 {% endblock %}

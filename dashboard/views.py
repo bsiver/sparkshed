@@ -18,7 +18,7 @@ from .forms import ItemOrderForm
 from .forms import KitDeliveryForm
 from .forms import KitForm
 from .forms import KitItemForm
-from .forms import KitItemFormset
+from .forms import KitItemFormSet
 from .forms import KitOrderForm
 from .models import Item
 from .models import ItemDelivery
@@ -221,26 +221,27 @@ def kit(request):
 
 @login_required()
 def create_kit(request):
-    kit_items = KitItem.objects.all()
-    form = KitForm(request.POST or None)
-    formset = KitItemFormset(request.POST or None)
+    if request.method == 'POST':
+        kit_form = KitForm(request.POST)
+        kit_item_formset = KitItemFormSet(request.POST)
 
-    context = {
-        'kit_form': form,
-        'kit_items_form': formset,
-        'kit_items': kit_items
-    }
-    if request.method == 'POST' and form.is_valid() and formset.is_valid():
-        kit = form.save()
-        for kit_item in formset.forms:
-            logger.info(f"{kit_item}")
-            kit_item = kit_item.save(commit=False)
-            kit_item.kit = kit
-            kit_item.save()
-            return render(request, "dashboard/kits.html", context)
+        if kit_form.is_valid() and kit_item_formset.is_valid():
+            kit = kit_form.save()
+            kit_items = kit_item_formset.save(commit=False)
 
-    logger.info(f"returning {context}")
-    return render(request, "dashboard/kit_create.html", context)
+            for kit_item in kit_items:
+                kit_item.kit = kit
+                kit_item.save()
+
+            return redirect('kits')
+    else:
+        kit_form = KitForm()
+        kit_item_formset = KitItemFormSet()
+
+    return render(request, 'dashboard/kit_create.html', {
+        'kit_form': kit_form,
+        'kit_item_formset': kit_item_formset,
+    })
 
 
 @login_required()
@@ -268,9 +269,7 @@ def kit_update(request, id=None):
     if form.is_valid():
         form.save()
         context['message'] = 'Data saved'
-    if request.htmx:
-        return render(request, 'partials/forms.html', context)
-    return render(request, 'dashboard/kits.html', context)
+    return render(request, 'dashboard/kit_edit.html', context)
 
 
 @login_required(login_url='user-login')
