@@ -5,26 +5,27 @@
 
 {% block content %}
 <body>
+    <body>
     <h1>Create Kit</h1>
     <form method="post">
         {% csrf_token %}
         {{ kit_form | crispy }}
         {{ kit_item_formset.management_form }}
-        <div id="kit_items">
+        <div id="kititems">
             {% for form in kit_item_formset %}
-                <div class="kit_item_form">
-                    {{ form|crispy }}
+                <div class="kititem-form">
+                    {{ form | crispy }}
                 </div>
             {% endfor %}
-        <button type="button" id="add_kit_item">Add another item</button>
         </div>
+        <button type="button" id="add-kititem">Add another item</button>
         <button type="submit">Save Kit</button>
     </form>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            const addKitItemButton = document.getElementById('add_kit_item');
-            const kititemsContainer = document.getElementById('kit_items');
-            const totalForms = document.getElementById('id_kit_items-TOTAL_FORMS');
+            const addKitItemButton = document.getElementById('add-kititem');
+            const kititemsContainer = document.getElementById('kititems');
+            const totalForms = document.getElementById('id_kititems-TOTAL_FORMS');
 
             addKitItemButton.addEventListener('click', function () {
                 const currentFormCount = kititemsContainer.children.length;
