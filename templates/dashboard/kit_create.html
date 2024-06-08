@@ -5,21 +5,20 @@
 
 {% block content %}
 <body>
-    <body>
-    <h1>Create Kit</h1>
+     <h1>{{ kit_form.instance.pk|yesno:"Edit Kit,Create Kit" }}</h1>
     <form method="post">
         {% csrf_token %}
         {{ kit_form | crispy }}
         {{ kit_item_formset.management_form }}
-        <div id="kititems">
-            {% for form in kit_item_formset %}
-                <div class="kititem-form">
-                    {{ form | crispy }}
-                </div>
-            {% endfor %}
+         <div id="kititems">
+                {% for form in kit_item_formset %}
+                    <div class="kititem-form border rounded p-2 mb-2">
+                        {{ form|crispy }}
+                    </div>
+                {% endfor %}
         </div>
-        <button type="button" id="add-kititem">Add another item</button>
-        <button type="submit">Save Kit</button>
+        <button type="button" id="add-kititem" class="btn btn-primary">Add Another Item</button>
+        <button type="submit" class="btn btn-success btn-block">Save Kit</button>
     </form>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
@@ -34,7 +33,42 @@
 
                 newForm.innerHTML = newForm.innerHTML.replace(formRegex, `-${currentFormCount}-`);
                 kititemsContainer.appendChild(newForm);
+                {#totalForms.setAttribute('value', currentFormCount + 1);#}
+
+                newForm.querySelectorAll('input').forEach(function (input) {
+                    if (input.type !== 'hidden') {
+                        input.value = '';
+                    }
+                });
+
+                // Append a delete checkbox to the new form
+                const deleteCheckbox = document.createElement('input');
+                deleteCheckbox.type = 'checkbox';
+                deleteCheckbox.name = `kititem_set-${currentFormCount}-DELETE`;
+                deleteCheckbox.id = `id_kititem_set-${currentFormCount}-DELETE`;
+
+                const deleteLabel = document.createElement('label');
+                deleteLabel.setAttribute('for', `id_kititem_set-${currentFormCount}-DELETE`);
+                deleteLabel.classList.add('mr-4');
+                deleteLabel.textContent = 'Remove Item';
+
+                const deleteDiv = document.createElement('div');
+                deleteDiv.appendChild(deleteLabel);
+                deleteDiv.appendChild(deleteCheckbox);
+
+                newForm.appendChild(deleteDiv);
+
+                kititemsContainer.appendChild(newForm);
                 totalForms.setAttribute('value', currentFormCount + 1);
+
+                // Add event listener to the delete checkbox
+                deleteCheckbox.addEventListener('click', function () {
+                    if (this.checked) {
+                        newForm.style.display = 'none';
+                    } else {
+                        newForm.style.display = 'block';
+                    }
+                });
             });
         });
     </script>
