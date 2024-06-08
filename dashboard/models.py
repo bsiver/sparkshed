@@ -84,7 +84,7 @@ class Kit(models.Model):
         return reverse("kit-detail", kwargs={"id": self.id})
 
     def get_edit_url(self):
-        return reverse("kit-edit", kwargs={"id": self.id})
+        return reverse("kit-create-edit", kwargs={"id": self.id})
 
     def get_delete_url(self):
         return reverse("kit-delete", kwargs={"id": self.id})

@@ -220,63 +220,50 @@ def kit(request):
     return render(request, "dashboard/kits.html", context)
 
 
-@login_required()
-def create_kit(request):
+@login_required
+def create_or_edit_kit(request, id=None):
+    if id:
+        kit = get_object_or_404(Kit, id=id)
+    else:
+        kit = None
+
     if request.method == 'POST':
-        kit_form = KitForm(request.POST)
-        kit_item_formset = KitItemFormSet(request.POST)
+        kit_form = KitForm(request.POST, instance=kit)
+        kit_item_formset = KitItemFormSet(request.POST, instance=kit)
 
         if kit_form.is_valid() and kit_item_formset.is_valid():
             kit = kit_form.save()
             item_quantities = defaultdict(int)
 
             for form in kit_item_formset:
+                if form.cleaned_data.get('DELETE'):
+                    if form.instance.pk:
+                        form.instance.delete()
+                    continue
+
                 item = form.cleaned_data.get('item')
                 quantity = form.cleaned_data.get('quantity', 0)
                 if item:
                     item_quantities[item] += quantity
 
             for item, total_quantity in item_quantities.items():
-                KitItem.objects.create(kit=kit, item=item, quantity=total_quantity)
+                if total_quantity == 0:
+                    KitItem.objects.filter(kit=kit, item=item).delete()
+                else:
+                    KitItem.objects.update_or_create(
+                        kit=kit, item=item,
+                        defaults={'quantity': total_quantity}
+                    )
 
             return redirect('kits')
     else:
-        kit_form = KitForm()
-        kit_item_formset = KitItemFormSet()
+        kit_form = KitForm(instance=kit)
+        kit_item_formset = KitItemFormSet(instance=kit)
 
     return render(request, 'dashboard/kit_create.html', {
         'kit_form': kit_form,
         'kit_item_formset': kit_item_formset,
     })
-
-
-@login_required()
-def kit_detail(request, id=None):
-    if not request.htmx:
-        raise Http404
-    obj = get_object_or_404(Kit, id=id)
-    context = {
-        'object': obj,
-        'new_kit_item_url': reverse('kit-item-create', kwargs={'parent_id': obj.id})
-    }
-    return render(request, "partials/kit-details.html", context)
-
-
-@login_required()
-def kit_update(request, id=None):
-    obj = get_object_or_404(Kit, id=id)
-    form = KitForm(request.POST or None, instance=obj)
-    new_kit_item_url = reverse('kit-item-create', kwargs={"parent_id": obj.id})
-    context = {
-        'form': form,
-        'object': obj,
-        'new_kit_item_url': new_kit_item_url
-    }
-    if form.is_valid():
-        form.save()
-        context['message'] = 'Data saved'
-    return render(request, 'dashboard/kit_edit.html', context)
-
 
 @login_required(login_url='user-login')
 def kit_delete(request, id):
@@ -288,53 +275,6 @@ def kit_delete(request, id):
         'kit': kit
     }
     return render(request, 'dashboard/kit_delete.html', context)
-
-
-@login_required()
-def create_kit_item(request, parent_id=None, id=None):
-    if not request.htmx:
-        raise Http404
-    kit = get_object_or_404(Kit, id=parent_id)
-    existing_kit_item = None
-    if id is not None:
-        try:
-            existing_kit_item = KitItem.objects.get(kit=kit, id=id)
-        except KitItem.DoesNotExist:
-            existing_kit_item = None
-    # form = KitItemForm(request.POST or None, instance=existing_kit_item)
-    form = KitItemForm()
-    url = reverse("kit-item-create", kwargs={"parent_id": kit.id})
-    if existing_kit_item:
-        url = existing_kit_item.get_hx_edit_url()
-    context = {
-        "url": url,
-        "form": form,
-        "object": existing_kit_item
-    }
-    if form.is_valid():
-        new_obj = form.save(commit=False)
-        if existing_kit_item is None:
-            new_obj.kit = kit
-        new_obj.save()
-        context['object'] = new_obj
-        return render(request, "partials/kit-item-inline.html", context)
-    return render(request, "partials/kit-item-form.html", context)
-
-
-@login_required()
-def delete_kit_item(request, parent_id=None, id=None):
-    kit_item = get_object_or_404(KitItem, kit__id=parent_id, id=id)
-    if request.method == "POST":
-        name = kit_item.item.name
-        kit_item.delete()
-        success_url = reverse('kit-detail', kwargs={"id": parent_id})
-        if request.htmx:
-            return render(request, "partials/kit-item-inline-delete-response.html", {"name": name})
-        return redirect(success_url)
-    context = {
-        "object": kit_item
-    }
-    return render(request, "dashboard/kit_delete.html", context)
 
 
 @login_required(login_url='user-login')

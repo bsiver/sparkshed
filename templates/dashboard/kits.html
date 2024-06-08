@@ -36,7 +36,7 @@
                         <td>{{ kit_item.quantity }}</td>
                         <td>
                             <a class="btn btn-info btn-sm mr-2"
-                               href="{% url 'kit-edit' kit_item.kit.id %}">Edit</a>
+                               href="{% url 'kit-create-edit' kit_item.kit.id %}">Edit</a>
                             <a class="btn btn-danger btn-sm ml-2"
                                href="{% url 'kit-delete' kit_item.kit.id %}">Delete</a>
                         </td>
@@ -49,7 +49,7 @@
 
     <div class="row my-4">
         <a class="btn btn-info btn-sm mr-2"
-           href="{% url 'kit-create' %}">Add Kit</a>
+           href="{% url 'kit-create-edit' %}">Add Kit</a>
     </div>
 
 {% endblock content %}

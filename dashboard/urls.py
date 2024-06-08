@@ -24,14 +24,8 @@ urlpatterns = [
 
     # kits
     path('kit/', views.kit, name='kits'),
-    path('kit/create/', views.create_kit, name='kit-create'),
+    path('kit/create/', views.create_or_edit_kit, name='kit-create-edit'),
     path('kit/order/', views.kit_order, name='kit-order-create'),
     path('kit/delete/<int:id>/', views.kit_delete, name='kit-delete'),
-    path('kit/edit/<int:id>/', views.kit_update, name='kit-edit'),
-    path('kit/detail/<int:id>/', views.kit_detail, name='kit-detail'),
-
-    # kit items
-    path('<int:parent_id>/kit_item/create', views.create_kit_item, name='kit-item-create'),
-    path('<int:parent_id>/kit_item/detail/<int:id>/', views.create_kit_item, name='kit-item-detail'),
-    path('<int:parent_id>/kit_item/delete/<int:id>/', views.delete_kit_item, name='kit-item-delete'),
+    path('kit/edit/<int:id>/', views.create_or_edit_kit, name='kit-create-edit'),
 ]

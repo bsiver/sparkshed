@@ -1,6 +1,7 @@
 {% extends 'partials/base.html' %}>
 {% load crispy_forms_filters %}
-{% block title %}Create Kit{% endblock %}
+{% block title %}{{ kit_form.instance.pk|yesno:"Edit Kit,Create Kit" }}{% endblock %}
+
 
 
 {% block content %}
@@ -14,6 +15,10 @@
                 {% for form in kit_item_formset %}
                     <div class="kititem-form border rounded p-2 mb-2">
                         {{ form|crispy }}
+                        {% if form.instance.pk %}
+                            <input type="checkbox" name="kititems-{{ forloop.counter0 }}-DELETE" id="id_kititems-{{ forloop.counter0 }}-DELETE">
+                            <label for="id_kititems-{{ forloop.counter0 }}-DELETE" class="mr-4">Delete This Item</label>
+                        {% endif %}
                     </div>
                 {% endfor %}
         </div>
