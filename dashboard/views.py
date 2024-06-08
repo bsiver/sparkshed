@@ -1,5 +1,6 @@
 import json
 import logging
+from collections import defaultdict
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -227,11 +228,16 @@ def create_kit(request):
 
         if kit_form.is_valid() and kit_item_formset.is_valid():
             kit = kit_form.save()
-            kit_items = kit_item_formset.save(commit=False)
+            item_quantities = defaultdict(int)
 
-            for kit_item in kit_items:
-                kit_item.kit = kit
-                kit_item.save()
+            for form in kit_item_formset:
+                item = form.cleaned_data.get('item')
+                quantity = form.cleaned_data.get('quantity', 0)
+                if item:
+                    item_quantities[item] += quantity
+
+            for item, total_quantity in item_quantities.items():
+                KitItem.objects.create(kit=kit, item=item, quantity=total_quantity)
 
             return redirect('kits')
     else:
