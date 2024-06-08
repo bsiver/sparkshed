@@ -6,6 +6,10 @@ body{
     transition: 0.1s ease-in-out;
 }
 
+.active .my-card {
+    border: 10px solid #21baa92e;
+}
+
 .htmx-indicator {
     display: none;
 }

@@ -7,7 +7,7 @@
             <div class="card-body">
                 <div class="row">
                     <div class="col-md-3">
-                        <a class="text-decoration-none text-dark" href="{% url 'dashboard-items' %}">
+                        <a class="text-decoration-none text-dark {% if 'item' in request.path %}active{% endif %}" href="{% url 'dashboard-items' %}">
                             <div class="card my-card shadow highlight">
                                 <div class="card-body text-center">
                                     <h4>Items</h4>
@@ -17,7 +17,7 @@
                         </a>
                     </div>
                     <div class="col-md-3">
-                        <a class="text-decoration-none text-dark" href="{% url 'kits' %}">
+                        <a class="text-decoration-none text-dark {% if 'kits' in request.path %}active{% endif %}" href="{% url 'kits' %}">
                             <div class="card my-card shadow">
                                 <div class="card-body text-center">
                                     <h4>Kits</h4>
@@ -27,7 +27,7 @@
                         </a>
                     </div>
                     <div class="col-md-3">
-                        <a class="text-decoration-none text-dark" href="{% url 'dashboard-order' %}">
+                        <a class="text-decoration-none text-dark {% if 'order' in request.path %}active{% endif %}" href="{% url 'dashboard-order' %}">
                             <div class="card my-card shadow">
                                 <div class="card-body text-center">
                                     <h4>Orders</h4>
@@ -37,7 +37,7 @@
                         </a>
                     </div>
                     <div class="col-md-3">
-                        <a class="text-decoration-none text-dark" href="{% url 'deliveries' %}">
+                        <a class="text-decoration-none text-dark {% if 'deliveries' in request.path %}active{% endif %}" href="{% url 'deliveries' %}">
                             <div class="card my-card shadow">
                                 <div class="card-body text-center">
                                     <h4>Deliveries</h4>
