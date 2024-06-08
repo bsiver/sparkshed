@@ -39,8 +39,7 @@ class KitItemForm(forms.ModelForm):
 
 KitItemFormSet = inlineformset_factory(
     Kit, KitItem, form=KitItemForm,
-    fields=['item', 'quantity'], extra=1, can_delete=True
-)
+    fields=['item', 'quantity'], extra=1, can_delete=False)
 
 
 class KitOrderForm(forms.ModelForm):
