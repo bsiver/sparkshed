@@ -42,6 +42,7 @@
                     <th data-sortable="true" scope="col">Description</th>
                     <th data-sortable="true" scope="col">In Stock</th>
                     <th data-sortable="true" scope="col">Ordered</th>
+                    <th data-sortable="true" scope="col">Unit(s)</th>
                     <th data-sortable="true" scope="col">Delivered</th>
                     <th scope="col">Action</th>
                 </tr>
@@ -53,6 +54,7 @@
                     <td>{{ item.description | default_if_none:'' }}</td>
                     <td>{{ item.quantity_in_stock }}</td>
                     <td>{{ item.quantity_ordered }}</td>
+                    <td>{{ item.kit_names_formatted }}</td>
                     <td>{{ item.quantity_delivered }}</td>
                     <td>
                         <a class="btn btn-info btn-sm mr-2"

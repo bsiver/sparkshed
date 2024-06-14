@@ -11,7 +11,7 @@ from dashboard.helpers import namedtuplefetchall
 
 
 class ItemManager(models.Manager):
-    def with_quantities(self):
+    def with_quantities_and_kits(self):
         items = list(self.all())
         item_ids = [item.id for item in items]
 
@@ -39,9 +39,25 @@ class ItemManager(models.Manager):
         ordered_quantities = {order['item_id']: order['total_order_quantity'] for order in item_orders}
         delivered_quantities = {delivery['item_id']: delivery['total_order_quantity'] for delivery in item_deliveries}
 
+        # Fetch kit names for each item
+        kit_names_sql = f"""
+                    SELECT ki.item_id, k.name as kit_name
+                    FROM dashboard_kititem ki
+                    JOIN dashboard_kit k ON ki.kit_id = k.id
+                    WHERE ki.item_id IN ({','.join(map(str, item_ids))})
+                """
+        with connection.cursor() as cursor:
+            cursor.execute(kit_names_sql)
+            kit_names_results = namedtuplefetchall(cursor)
+
+        kits_for_items = defaultdict(list)
+        for result in kit_names_results:
+            kits_for_items[result.item_id].append(result.kit_name)
+
         for item in items:
             item._quantity_ordered = ordered_quantities.get(item.id, 0) + ordered_from_kits[item.id]
             item._quantity_delivered = delivered_quantities.get(item.id, 0)
+            item._kit_names = kits_for_items[item.id]
 
         return items
 
@@ -54,7 +70,18 @@ class Item(models.Model):
     objects = ItemManager()
 
     def __str__(self):
-        return f'{self.name} | quantity: {self.quantity} | ordered: {self.quantity_ordered} | delivered: {self.quantity_delivered}'
+        return f'{self.name}'
+
+
+    @property
+    def kit_names(self):
+        if not hasattr(self, '_kit_names'):
+            self._kit_names = []
+        return self._kit_names
+
+    @property
+    def kit_names_formatted(self):
+        return ', '.join(sorted(self.kit_names))
 
     @property
     def quantity_ordered(self):
