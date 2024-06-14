@@ -47,8 +47,9 @@ class ItemManager(models.Manager):
 
 
 class Item(models.Model):
-    name = models.CharField(max_length=100, null=True)
-    quantity = models.PositiveIntegerField(null=True)
+    name = models.CharField(max_length=100)
+    description = models.TextField()
+    quantity = models.PositiveIntegerField()
 
     objects = ItemManager()
 
@@ -73,7 +74,7 @@ class Item(models.Model):
 
 
 class Kit(models.Model):
-    name = models.CharField(max_length=100, null=True)
+    name = models.CharField(max_length=100)
     updated_date = models.DateTimeField(editable=False, auto_now=True)
 
     def __str__(self):
@@ -100,9 +101,9 @@ class Kit(models.Model):
 
 
 class KitItem(models.Model):
-    item = models.ForeignKey(Item, on_delete=models.CASCADE, null=True)
-    kit = models.ForeignKey(Kit, on_delete=models.CASCADE, null=True, related_name='kititems')
-    quantity = models.PositiveIntegerField(null=True)
+    item = models.ForeignKey(Item, on_delete=models.CASCADE)
+    kit = models.ForeignKey(Kit, on_delete=models.CASCADE, related_name='kititems')
+    quantity = models.PositiveIntegerField()
 
     def get_absolute_url(self):
         return self.kit.get_absolute_url()
@@ -123,12 +124,12 @@ class KitItem(models.Model):
 
 
 class Order(models.Model):
-    customer = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
-    order_quantity = models.PositiveIntegerField(null=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    order_quantity = models.PositiveIntegerField()
     updated_date = models.DateTimeField(editable=False, auto_now=True)
 
     def __str__(self):
-        return f'{self.customer}-{self.order_quantity}'
+        return f'{self.user}-{self.order_quantity}'
 
     class Meta:
         abstract = True
