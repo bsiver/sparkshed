@@ -34,7 +34,7 @@ logger = logging.getLogger(__name__)
 
 @login_required(login_url='user-login')
 def index(request):
-    items = Item.objects.all()
+    items = Item.objects.with_quantities()
     kit_orders = KitOrder.objects.all()
     item_orders = ItemOrder.objects.all()
     context = {
@@ -46,7 +46,7 @@ def index(request):
 
 @login_required(login_url='user-login')
 def products(request):
-    items = Item.objects.all()
+    items = Item.objects.with_quantities()
     if request.method == 'POST':
         form = ItemForm(request.POST)
         if form.is_valid():

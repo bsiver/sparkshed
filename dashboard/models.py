@@ -1,67 +1,73 @@
+from collections import defaultdict
+
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.db import connection
 from django.contrib.auth.models import User
+from django.db.models import Sum
 from django.urls import reverse
 
 from dashboard.helpers import namedtuplefetchall
+
+
+class ItemManager(models.Manager):
+    def with_quantities(self):
+        items = list(self.all())
+        item_ids = [item.id for item in items]
+
+        # Bulk fetch data for quantity_ordered
+        kit_order_sql = f"""
+            SELECT ki.item_id, ko.order_quantity, ki.quantity
+            FROM dashboard_kitorder ko
+            JOIN dashboard_kit k ON ko.kit_id = k.id
+            JOIN dashboard_kititem ki ON k.id = ki.kit_id
+            LEFT JOIN dashboard_kitdelivery kd ON kd.kit_id = k.id
+            WHERE ki.item_id IN ({','.join(map(str, item_ids))})
+            AND kd.id IS NULL
+        """
+        with connection.cursor() as cursor:
+            cursor.execute(kit_order_sql)
+            kit_order_results = namedtuplefetchall(cursor)
+
+        ordered_from_kits = defaultdict(int)
+        for result in kit_order_results:
+            ordered_from_kits[result.item_id] += result.order_quantity * result.quantity
+
+        item_orders = ItemOrder.objects.filter(item_id__in=item_ids).values('item_id').annotate(total_order_quantity=Sum('order_quantity'))
+        item_deliveries = ItemDelivery.objects.filter(item_id__in=item_ids).values('item_id').annotate(total_order_quantity=Sum('order__order_quantity'))
+
+        ordered_quantities = {order['item_id']: order['total_order_quantity'] for order in item_orders}
+        delivered_quantities = {delivery['item_id']: delivery['total_order_quantity'] for delivery in item_deliveries}
+
+        for item in items:
+            item._quantity_ordered = ordered_quantities.get(item.id, 0) + ordered_from_kits[item.id]
+            item._quantity_delivered = delivered_quantities.get(item.id, 0)
+
+        return items
 
 
 class Item(models.Model):
     name = models.CharField(max_length=100, null=True)
     quantity = models.PositiveIntegerField(null=True)
 
+    objects = ItemManager()
+
     def __str__(self):
-        return f'{self.name}'
+        return f'{self.name} | quantity: {self.quantity} | ordered: {self.quantity_ordered} | delivered: {self.quantity_delivered}'
 
     @property
     def quantity_ordered(self):
-        kit_order_sql = f"""
-            SELECT ko.order_quantity, ki.quantity
-            FROM dashboard_kitorder ko
-            JOIN dashboard_kit k ON ko.kit_id = k.id
-            JOIN dashboard_kititem ki on ko.kit_id = k.id
-            JOIN dashboard_item i ON i.id = ki.item_id
-            LEFT JOIN dashboard_kitdelivery kd ON kd.kit_id = k.id
-            WHERE ki.item_id = {self.id}
-            AND kd.id IS NULL
-        """
-        with connection.cursor() as cursor:
-            cursor.execute(kit_order_sql)
-            results = namedtuplefetchall(cursor)
-
-        ordered_from_kits = 0
-        if results:
-            ordered_from_kits = sum([i.order_quantity * i.quantity for i in results])
-
-        return sum([order.order_quantity for order in ItemOrder.objects.filter(item__name=self.name)]) + ordered_from_kits
-
-    @property
-    def quantity_remaining(self):
-        return self.quantity - self.quantity_ordered
+        if not hasattr(self, '_quantity_ordered'):
+            self._quantity_ordered = 0
+        return self._quantity_ordered
 
     @property
     def quantity_delivered(self):
-        kit_delivery_sql = f"""
-                SELECT ko.order_quantity, ki.quantity
-                FROM dashboard_kitdelivery kd
-                JOIN dashboard_kitorder ko on kd.order_id = ko.id 
-                JOIN dashboard_kit k ON kd.kit_id = k.id
-                JOIN dashboard_kititem ki on kd.kit_id = k.id
-                JOIN dashboard_item i ON i.id = ki.item_id
-                WHERE ki.item_id = {self.id}
-            """
-        with connection.cursor() as cursor:
-            cursor.execute(kit_delivery_sql)
-            results = namedtuplefetchall(cursor)
+        if not hasattr(self, '_quantity_delivered'):
+            self._quantity_delivered = 0
+        return self._quantity_delivered
 
-        delivered_from_kit_orders = 0
-        if results:
-            delivered_from_kit_orders = sum([i.order_quantity * i.quantity for i in results])
-
-        return sum(
-            [order.order_quantity for order in ItemDelivery.objects.filter(item__name=self.name)]) + delivered_from_kit_orders
-
+    @property
     def quantity_in_stock(self):
         return self.quantity - self.quantity_delivered
 
