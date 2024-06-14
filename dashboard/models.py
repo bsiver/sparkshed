@@ -48,7 +48,7 @@ class ItemManager(models.Manager):
 
 class Item(models.Model):
     name = models.CharField(max_length=100)
-    description = models.TextField()
+    description = models.TextField(null=True)
     quantity = models.PositiveIntegerField()
 
     objects = ItemManager()
@@ -124,12 +124,12 @@ class KitItem(models.Model):
 
 
 class Order(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    customer = models.ForeignKey(User, on_delete=models.CASCADE)
     order_quantity = models.PositiveIntegerField()
     updated_date = models.DateTimeField(editable=False, auto_now=True)
 
     def __str__(self):
-        return f'{self.user}-{self.order_quantity}'
+        return f'{self.customer}-{self.order_quantity}'
 
     class Meta:
         abstract = True
