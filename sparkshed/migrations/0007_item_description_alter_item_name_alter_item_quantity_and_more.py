@@ -9,7 +9,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('dashboard', '0006_itemdelivery_order_kitdelivery_order'),
+        ('sparkshed', '0006_itemdelivery_order_kitdelivery_order'),
     ]
 
     operations = [
@@ -51,13 +51,13 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='kititem',
             name='item',
-            field=models.ForeignKey(default=None, on_delete=django.db.models.deletion.CASCADE, to='dashboard.item'),
+            field=models.ForeignKey(default=None, on_delete=django.db.models.deletion.CASCADE, to='sparkshed.item'),
             preserve_default=False,
         ),
         migrations.AlterField(
             model_name='kititem',
             name='kit',
-            field=models.ForeignKey(default=None, on_delete=django.db.models.deletion.CASCADE, related_name='kititems', to='dashboard.kit'),
+            field=models.ForeignKey(default=None, on_delete=django.db.models.deletion.CASCADE, related_name='kititems', to='sparkshed.kit'),
             preserve_default=False,
         ),
         migrations.AlterField(

@@ -7,21 +7,21 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('dashboard', '0004_itemorder_customer_itemorder_order_quantity_and_more'),
+        ('sparkshed', '0004_itemorder_customer_itemorder_order_quantity_and_more'),
     ]
 
     operations = [
         migrations.AlterField(
             model_name='kititem',
             name='kit',
-            field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, related_name='kititems', to='dashboard.kit'),
+            field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, related_name='kititems', to='sparkshed.kit'),
         ),
         migrations.CreateModel(
             name='KitDelivery',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('delivery_date', models.DateTimeField(auto_now=True)),
-                ('kit', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='dashboard.kit')),
+                ('kit', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='sparkshed.kit')),
             ],
             options={
                 'abstract': False,
@@ -32,7 +32,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('delivery_date', models.DateTimeField(auto_now=True)),
-                ('item', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='dashboard.item')),
+                ('item', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='sparkshed.item')),
             ],
             options={
                 'abstract': False,

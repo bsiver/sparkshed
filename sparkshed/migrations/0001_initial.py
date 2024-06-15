@@ -37,7 +37,7 @@ class Migration(migrations.Migration):
                 ('order_quantity', models.PositiveIntegerField(null=True)),
                 ('updated_date', models.DateTimeField(auto_now=True)),
                 ('customer', models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
-                ('item', models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, to='dashboard.item')),
+                ('item', models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, to='sparkshed.item')),
             ],
         ),
         migrations.CreateModel(
@@ -45,13 +45,13 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('quantity', models.PositiveIntegerField(null=True)),
-                ('item', models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, to='dashboard.item')),
-                ('kit', models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, to='dashboard.kit')),
+                ('item', models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, to='sparkshed.item')),
+                ('kit', models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, to='sparkshed.kit')),
             ],
         ),
         migrations.AddField(
             model_name='kit',
             name='items',
-            field=models.ManyToManyField(related_name='kits', through='dashboard.KitItem', to='dashboard.item'),
+            field=models.ManyToManyField(related_name='kits', through='sparkshed.KitItem', to='sparkshed.item'),
         ),
     ]

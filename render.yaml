@@ -8,7 +8,7 @@ services:
     name: sparkshed
     env: python
     buildCommand: "./build.sh"
-    startCommand: "gunicorn inventoryproject.wsgi:application"
+    startCommand: "gunicorn sparkshed.wsgi:application"
     envVars:
       - key: DATABASE_URL
         fromDatabase:

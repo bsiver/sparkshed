@@ -73,9 +73,9 @@
                                             </td>
                                             <td>
                                                 <a class="btn btn-info btn-sm mr-2"
-                                                   href="{% url 'dashboard-order-edit' type='kit' pk=order.id %}">Edit</a>
+                                                   href="{% url 'sparkshed-order-edit' type='kit' pk=order.id %}">Edit</a>
                                                 <a class="btn btn-danger btn-sm ml-2 mr-2"
-                                                   href="{% url 'dashboard-order-delete' type='kit' pk=order.id %}">Delete</a>
+                                                   href="{% url 'sparkshed-order-delete' type='kit' pk=order.id %}">Delete</a>
                                                 <form class="btn btn-primary btn-sm mr-2" hx-post='{{ order.get_deliver_url }}'
                                                           method="POST"
                                                           action="."
@@ -127,9 +127,9 @@
                                             <td>{{ order.customer.username }}</td>
                                             <td>
                                                 <a class="btn btn-info btn-sm mr-2"
-                                                   href="{% url 'dashboard-order-edit' type='item' pk=order.id %}">Edit</a>
+                                                   href="{% url 'sparkshed-order-edit' type='item' pk=order.id %}">Edit</a>
                                                 <a class="btn btn-danger btn-sm ml-2"
-                                                   href="{% url 'dashboard-order-delete' type='item' pk=order.id %}">Delete</a>
+                                                   href="{% url 'sparkshed-order-delete' type='item' pk=order.id %}">Delete</a>
                                             </td>
                                         </tr>
                                     {% endfor %}

@@ -7,20 +7,20 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('dashboard', '0005_alter_kititem_kit_kitdelivery_itemdelivery'),
+        ('sparkshed', '0005_alter_kititem_kit_kitdelivery_itemdelivery'),
     ]
 
     operations = [
         migrations.AddField(
             model_name='itemdelivery',
             name='order',
-            field=models.ForeignKey(default=1, on_delete=django.db.models.deletion.CASCADE, to='dashboard.itemorder'),
+            field=models.ForeignKey(default=1, on_delete=django.db.models.deletion.CASCADE, to='sparkshed.itemorder'),
             preserve_default=False,
         ),
         migrations.AddField(
             model_name='kitdelivery',
             name='order',
-            field=models.ForeignKey(default=1, on_delete=django.db.models.deletion.CASCADE, to='dashboard.kitorder'),
+            field=models.ForeignKey(default=1, on_delete=django.db.models.deletion.CASCADE, to='sparkshed.kitorder'),
             preserve_default=False,
         ),
     ]

@@ -1,13 +1,13 @@
 from django import forms
 from django.forms import inlineformset_factory
 
-from dashboard.models import Item
-from dashboard.models import ItemDelivery
-from dashboard.models import ItemOrder
-from dashboard.models import Kit
-from dashboard.models import KitDelivery
-from dashboard.models import KitItem
-from dashboard.models import KitOrder
+from sparkshed.models import Item
+from sparkshed.models import ItemDelivery
+from sparkshed.models import ItemOrder
+from sparkshed.models import Kit
+from sparkshed.models import KitDelivery
+from sparkshed.models import KitItem
+from sparkshed.models import KitOrder
 import logging
 logger = logging.getLogger(__name__)
 

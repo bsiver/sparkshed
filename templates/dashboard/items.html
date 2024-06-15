@@ -60,8 +60,8 @@
                                 <td>{{ item.kit_names_formatted }}</td>
                                 <td>{{ item.quantity_delivered }}</td>
                                 <td>
-                                    <a class="btn btn-info btn-sm mr-2" href="{% url 'dashboard-items-edit' item.id %}">Edit</a>
-                                    <a class="btn btn-danger btn-sm ml-2" href="{% url 'dashboard-items-delete' item.id %}">Delete</a>
+                                    <a class="btn btn-info btn-sm mr-2" href="{% url 'sparkshed-items-edit' item.id %}">Edit</a>
+                                    <a class="btn btn-danger btn-sm ml-2" href="{% url 'sparkshed-items-delete' item.id %}">Delete</a>
                                 </td>
                             </tr>
                         {% endfor %}

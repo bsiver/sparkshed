@@ -53,7 +53,7 @@ def products(request):
             form.save()
             item_name = form.cleaned_data.get('name')
             messages.success(request, f'{item_name} has been added')
-            return redirect('dashboard-items')
+            return redirect('sparkshed-items')
     else:
         form = ItemForm()
     context = {
@@ -96,7 +96,7 @@ def item_edit(request, pk):
         form = ItemForm(request.POST, instance=item)
         if form.is_valid():
             form.save()
-            return redirect('dashboard-items')
+            return redirect('sparkshed-items')
     else:
         form = ItemForm(instance=item)
     context = {
@@ -110,7 +110,7 @@ def item_delete(request, pk):
     item = Item.objects.get(id=pk)
     if request.method == 'POST':
         item.delete()
-        return redirect('dashboard-items')
+        return redirect('sparkshed-items')
     context = {
         'item': item
     }
@@ -187,7 +187,7 @@ def order_edit(request, type, pk):
         return Http404()
     if request.method == 'POST' and form.is_valid():
         form.save()
-        return redirect('dashboard-order')
+        return redirect('sparkshed-order')
     context = {
         'form': form
     }
@@ -204,7 +204,7 @@ def order_delete(request, type, pk):
         return Http404()
     if request.method == 'POST':
         order.delete()
-        return redirect('dashboard-order')
+        return redirect('sparkshed-order')
     context = {
         'order': order
     }
@@ -343,7 +343,7 @@ def delivery_edit(request, type, pk):
         return Http404()
     if request.method == 'POST' and form.is_valid():
         form.save()
-        return redirect('dashboard-delivery')
+        return redirect('sparkshed-delivery')
     context = {
         'form': form
     }

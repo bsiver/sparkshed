@@ -9,7 +9,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('dashboard', '0003_itemorder_kitorder_delete_order'),
+        ('sparkshed', '0003_itemorder_kitorder_delete_order'),
     ]
 
     operations = [

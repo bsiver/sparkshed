@@ -5,7 +5,7 @@ from django.shortcuts import redirect
 def auth_users(view_func):
     def wrapper(request, *args, **kwargs):
         if request.user.is_authenticated:
-            return redirect('dashboard-index')
+            return redirect('sparkshed-index')
         else:
             return view_func(request, *args, **kwargs)
     return wrapper

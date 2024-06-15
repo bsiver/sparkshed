@@ -7,7 +7,7 @@ from django.contrib.auth.models import User
 from django.db.models import Sum
 from django.urls import reverse
 
-from dashboard.helpers import namedtuplefetchall
+from sparkshed.helpers import namedtuplefetchall
 
 
 class ItemManager(models.Manager):
@@ -18,10 +18,10 @@ class ItemManager(models.Manager):
         # Bulk fetch data for quantity_ordered
         kit_order_sql = f"""
             SELECT ki.item_id, ko.order_quantity, ki.quantity
-            FROM dashboard_kitorder ko
-            JOIN dashboard_kit k ON ko.kit_id = k.id
-            JOIN dashboard_kititem ki ON k.id = ki.kit_id
-            LEFT JOIN dashboard_kitdelivery kd ON kd.kit_id = k.id
+            FROM sparkshed_kitorder ko
+            JOIN sparkshed_kit k ON ko.kit_id = k.id
+            JOIN sparkshed_kititem ki ON k.id = ki.kit_id
+            LEFT JOIN sparkshed_kitdelivery kd ON kd.kit_id = k.id
             WHERE ki.item_id IN ({','.join(map(str, item_ids))})
             AND kd.id IS NULL
         """
@@ -42,8 +42,8 @@ class ItemManager(models.Manager):
         # Fetch kit names for each item
         kit_names_sql = f"""
                     SELECT ki.item_id, k.name as kit_name
-                    FROM dashboard_kititem ki
-                    JOIN dashboard_kit k ON ki.kit_id = k.id
+                    FROM sparkshed_kititem ki
+                    JOIN sparkshed_kit k ON ki.kit_id = k.id
                     WHERE ki.item_id IN ({','.join(map(str, item_ids))})
                 """
         with connection.cursor() as cursor:
