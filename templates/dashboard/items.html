@@ -3,69 +3,71 @@
 {% load crispy_forms_tags %}
 
 {% block content %}
-{% include 'partials/topside.html' %}
-<div class="row my-4">
-    <div class="col-md-4">
-        {% if messages %}
-        {% for message in messages %}
-        <div class="alert alert-{{ message.tags }}">
-            {{ message }}
-        </div>
-        {% endfor %}
-        {% endif %}
-        <div class="card card-body">
-            <h5>Add New Items</h5>
-            <hr>
-            <form method="POST">
-                {% csrf_token %}
-                {{ form|crispy }}
-                <input class="btn btn-success btn-block" type="submit" value="Add">
-            </form>
+    {% include 'partials/topside.html' %}
+
+    <div class="container my-4">
+        <div class="row">
+            <div class="col-md-4">
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="alert alert-{{ message.tags }}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+                <div class="card">
+                    <div class="card-body">
+                        <h5>Add New Item</h5>
+                        <hr>
+                        <form method="POST">
+                            {% csrf_token %}
+                            {{ form|crispy }}
+                            <input class="btn btn-success btn-block" type="submit" value="Add">
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-8">
+                <table id="item-table" class="table table-striped bg-white"
+                       data-toggle="table"
+                       data-pagination="true"
+                       data-pagination-h-align="left"
+                       data-pagination-detail-h-align="right"
+                       data-page-size="25"
+                       data-page-list="[10, 25, 50, 100, all]"
+                       data-search="true"
+                       data-show-columns="true"
+                       data-filter-control="true"
+                       data-show-search-clear-button="true">
+                    <thead class="bg-info text-white">
+                        <tr>
+                            <th data-sortable="true" scope="col">Name</th>
+                            <th data-sortable="true" scope="col">Description</th>
+                            <th data-sortable="true" scope="col">In Stock</th>
+                            <th data-sortable="true" scope="col">Ordered</th>
+                            <th data-sortable="true" scope="col">Unit(s)</th>
+                            <th data-sortable="true" scope="col">Delivered</th>
+                            <th scope="col">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in items %}
+                            <tr>
+                                <td>{{ item.name }}</td>
+                                <td>{{ item.description | default_if_none:'' }}</td>
+                                <td>{{ item.quantity_in_stock }}</td>
+                                <td>{{ item.quantity_ordered }}</td>
+                                <td>{{ item.kit_names_formatted }}</td>
+                                <td>{{ item.quantity_delivered }}</td>
+                                <td>
+                                    <a class="btn btn-info btn-sm mr-2" href="{% url 'dashboard-items-edit' item.id %}">Edit</a>
+                                    <a class="btn btn-danger btn-sm ml-2" href="{% url 'dashboard-items-delete' item.id %}">Delete</a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
-    <div class="col-md-8">
-        <table id="item-table"
-               data-toggle="table"
-               data-pagination="true"
-               data-pagination-h-align="left"
-               data-pagination-detail-h-align="right"
-               data-page-size="25"
-               data-page-list="[10, 25, 50, 100, all]"
-               data-search="true"
-               data-show-columns="true"
-               data-filter-control="true"
-               data-show-search-clear-button="true"
-               class="table bg-white">
-            <thead class="bg-info text-white">
-                <tr>
-                    <th data-sortable="true" scope="col">Name</th>
-                    <th data-sortable="true" scope="col">Description</th>
-                    <th data-sortable="true" scope="col">In Stock</th>
-                    <th data-sortable="true" scope="col">Ordered</th>
-                    <th data-sortable="true" scope="col">Unit(s)</th>
-                    <th data-sortable="true" scope="col">Delivered</th>
-                    <th scope="col">Action</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for item in items %}
-                <tr>
-                    <td>{{ item.name }}</td>
-                    <td>{{ item.description | default_if_none:'' }}</td>
-                    <td>{{ item.quantity_in_stock }}</td>
-                    <td>{{ item.quantity_ordered }}</td>
-                    <td>{{ item.kit_names_formatted }}</td>
-                    <td>{{ item.quantity_delivered }}</td>
-                    <td>
-                        <a class="btn btn-info btn-sm mr-2"
-                            href="{% url 'dashboard-items-edit' item.id %}">Edit</a>
-                        <a class="btn btn-danger btn-sm ml-2"
-                            href="{% url 'dashboard-items-delete' item.id %}">Delete</a>
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
-</div>
 {% endblock %}
