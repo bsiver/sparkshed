@@ -12,15 +12,15 @@
                 <div class="panel-body bg-white mt-3">
                     <ul class="nav nav-pills">
                         <li class="nav-item">
-                            <a class="nav-link active" aria-current="page" data-toggle="tab" href="#kit-order-tab">Kit Orders</a>
+                            <a class="nav-link active" aria-current="page" data-bs-toggle="tab" href="#kit-order-tab">Kit Orders</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" aria-current="page" data-toggle="tab" href="#item-order-tab">Item Orders</a>
+                            <a class="nav-link" aria-current="page" data-bs-toggle="tab" href="#item-order-tab">Item Orders</a>
                     </ul>
                 </div>
 
-                <div id="#tab-content" class="tab-content">
-                    <div id="kit-order-tab" class="tab-pane fade-in active">
+                <div id="tab-content" class="tab-content">
+                    <div id="kit-order-tab" class="tab-pane fade show active">
                         <div class="row my-4">
                             <div class="col-md-4">
                                 <div class="card card-body">
@@ -30,7 +30,7 @@
                                         {% csrf_token %}
                                         {{ kit_form | as_crispy_errors }}
                                         {{ kit_form | crispy }}
-                                        <input class="btn btn-success btn-block" type="submit" value="Add">
+                                        <input class="btn btn-success btn-block my-2" type="submit" value="Add">
                                     </form>
                                 </div>
                             </div>
@@ -94,7 +94,7 @@
                         </div>
                     </div>
 
-                    <div id="item-order-tab" class="tab-pane fade in">
+                    <div id="item-order-tab" class="tab-pane fade show">
                         <div class="row my-4">
                             <div class="col-md-4">
                                 <div class="card card-body">
@@ -103,7 +103,7 @@
                                     <form method="POST" action={{ new_item_order_url }}>
                                         {% csrf_token %}
                                         {{ item_form|crispy }}
-                                        <input class="btn btn-success btn-block" type="submit" value="Add">
+                                        <input class="btn btn-success btn-block my-2" type="submit" value="Add">
                                     </form>
                                 </div>
                             </div>
