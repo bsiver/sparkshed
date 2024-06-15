@@ -1,26 +1,24 @@
 {% extends 'partials/base.html' %}
-{% block title %}Customer Page{% endblock %}
+{% block title %}Profile Page{% endblock %}
 {% load crispy_forms_tags %}
 {% block content %}
-<div class="row my-4">
-    <div class="col-md-4"></div>
-    <div class="col-md-8">
-        <div class="card">
-            <div class="card-header bg-info text-white">
-                Customer Detail Page
-            </div>
-            <div class="row p-3">
+<div class="container my-4">
+    <div class="card">
+        <div class="card-header bg-info text-white">
+            Update Profile
+        </div>
+        <div class="card-body">
+            <div class="row">
                 <div class="col-md-8">
                     <form method="POST" enctype="multipart/form-data">
                         {% csrf_token %}
                         {{ u_form|crispy }}
                         {{ p_form|crispy }}
-                        <input class="btn btn-info" type="submit" value="Update">
+                        <button class="btn btn-info" type="submit">Update</button>
                     </form>
                 </div>
             </div>
         </div>
     </div>
 </div>
-
 {% endblock %}

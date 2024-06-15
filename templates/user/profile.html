@@ -1,22 +1,15 @@
 {% extends 'partials/base.html' %}
-{% block title %}Customer Page{% endblock %}
+{% block title %}Profile Page{% endblock %}
 
 {% block content %}
-<div class="row my-4">
-    <div class="col-md-4"></div>
-    <div class="col-md-8">
-        <div class="card">
-            <div class="card-header bg-info text-white">
-                Customer Detail Page
-            </div>
-            <div class="row p-3">
+<div class="container">
+    <div class="card my-4">
+        <div class="card-body">
+            <div class="row">
                 <div class="col-md-8">
+                    <h4>Profile Information</h4>
+                    <hr>
                     <table class="table table-borderless">
-                        <thead>
-                            <span class="h4">Profile Information</span class="h4">
-                            <a class="btn btn-info btn-sm float-right" href="{% url 'user-profile-update' %}">Edit</a>
-                            <hr>
-                        </thead>
                         <tbody>
                             <tr>
                                 <th scope="row">Name</th>
@@ -36,6 +29,7 @@
                             </tr>
                         </tbody>
                     </table>
+                    <a class="btn btn-info btn-sm float-right" href="{% url 'user-profile-update' %}">Edit</a>
                 </div>
                 <div class="col-md-4">
                     <img class="img-thumbnail" src="{{ user.profile.image.url }}" alt="profile-image">
@@ -44,5 +38,4 @@
         </div>
     </div>
 </div>
-
 {% endblock %}
