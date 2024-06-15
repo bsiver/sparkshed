@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     'dashboard.apps.DashboardConfig',
     'user.apps.UserConfig',
     'crispy_forms',
+    "crispy_bootstrap5",
     'django_htmx',
     'fontawesomefree'
 ]
@@ -165,6 +166,8 @@ USE_TZ = True
 
 
 CRISPY_TEMPLATE_PACK = 'bootstrap5'
+CRISPY_ALLOWED_TEMPLATE_PACKS = 'bootstrap5'
+
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
