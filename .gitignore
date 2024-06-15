@@ -17,5 +17,7 @@ media
 
 *.py[cod] 
 *$py.class 
+*.pyc
+*.pyo
 
 .DS_Store
