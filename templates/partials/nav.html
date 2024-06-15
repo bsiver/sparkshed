@@ -6,32 +6,35 @@
         <a class="navbar-brand text-white" href="{% url 'dashboard-index' %}">
             <img src="{% static "img/ss_logo.png" %}" alt="SparkShed Logo" height="70">
         </a>
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
             aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
 
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
-            <ul class="navbar-nav ml-auto">
-                <li class="nav-item active">
-                    <a class="nav-link text-white" href="{% url 'user-profile' %}">{{ user.username }}
-                        <span class="sr-only">(current)</span></a>
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item">
+                    <a class="nav-link text-white" href="{% url 'user-profile' %}">
+                        <i class="bi bi-person-circle"></i> <!-- Bootstrap icon for user profile -->
+                        {{ user.username }}
+                    </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link text-white" href="{% url 'user-logout' %}">Logout</a>
+                    <a class="nav-link text-white border border-white rounded ms-2" href="{% url 'user-logout' %}">Logout</a>
                 </li>
             </ul>
-            {% else %}
-            <ul class="navbar-nav ml-auto">
+        </div>
+        {% else %}
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav ms-auto">
                 <li class="nav-item active">
-                    <a class="nav-link text-white" href="{% url 'user-register' %}">Register <span
-                            class="sr-only">(current)</span></a>
+                    <a class="nav-link text-white" href="{% url 'user-register' %}">Register <span class="sr-only">(current)</span></a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link text-white" href="{% url 'user-login' %}">Login</a>
                 </li>
             </ul>
-            {% endif %}
         </div>
+        {% endif %}
     </div>
 </nav>
