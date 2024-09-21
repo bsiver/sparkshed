@@ -19,7 +19,7 @@ class ItemManager(models.Manager):
 
         item_ids = [item.id for item in items]
 
-        # Bulk fetch data for quantity_ordered
+        # Fetch ordered quantities from kit orders
         kit_order_sql = f"""
             SELECT ki.item_id, ko.order_quantity, ki.quantity
             FROM sparkshed_kitorder ko
@@ -37,19 +37,32 @@ class ItemManager(models.Manager):
         for result in kit_order_results:
             ordered_from_kits[result.item_id] += result.order_quantity * result.quantity
 
+        # Fetch item orders (non-kit orders)
         item_orders = ItemOrder.objects.filter(item_id__in=item_ids).values('item_id').annotate(total_order_quantity=Sum('order_quantity'))
+
+        # Fetch item deliveries (non-kit deliveries)
         item_deliveries = ItemDelivery.objects.filter(item_id__in=item_ids).values('item_id').annotate(total_order_quantity=Sum('order__order_quantity'))
+
+        # Fetch kit deliveries using ORM, ensuring KitItem quantity is accounted for
+        kit_deliveries = KitDelivery.objects.filter(kit__kititems__item_id__in=item_ids) \
+            .values('kit__kititems__item_id', 'kit__kititems__quantity') \
+            .annotate(total_delivered_kits=Sum('order__order_quantity'))
+
+        delivered_from_kits = defaultdict(int)
+        for result in kit_deliveries:
+            # Multiply the quantity of the item in the kit by the total delivered kits
+            delivered_from_kits[result['kit__kititems__item_id']] += result['kit__kititems__quantity'] * result['total_delivered_kits']
 
         ordered_quantities = {order['item_id']: order['total_order_quantity'] for order in item_orders}
         delivered_quantities = {delivery['item_id']: delivery['total_order_quantity'] for delivery in item_deliveries}
 
         # Fetch kit names for each item
         kit_names_sql = f"""
-                    SELECT ki.item_id, k.name as kit_name
-                    FROM sparkshed_kititem ki
-                    JOIN sparkshed_kit k ON ki.kit_id = k.id
-                    WHERE ki.item_id IN ({','.join(map(str, item_ids))})
-                """
+            SELECT ki.item_id, k.name as kit_name
+            FROM sparkshed_kititem ki
+            JOIN sparkshed_kit k ON ki.kit_id = k.id
+            WHERE ki.item_id IN ({','.join(map(str, item_ids))})
+        """
         with connection.cursor() as cursor:
             cursor.execute(kit_names_sql)
             kit_names_results = namedtuplefetchall(cursor)
@@ -58,9 +71,15 @@ class ItemManager(models.Manager):
         for result in kit_names_results:
             kits_for_items[result.item_id].append(result.kit_name)
 
+        # Assign the calculated quantities and kit names to each item
         for item in items:
+            # Total ordered quantity includes both item orders and kit orders
             item._quantity_ordered = ordered_quantities.get(item.id, 0) + ordered_from_kits[item.id]
-            item._quantity_delivered = delivered_quantities.get(item.id, 0)
+
+            # Total delivered quantity includes both item deliveries and kit deliveries
+            item._quantity_delivered = delivered_quantities.get(item.id, 0) + delivered_from_kits.get(item.id, 0)
+
+            # Attach the kit names to each item
             item._kit_names = kits_for_items[item.id]
 
         return items
