@@ -179,12 +179,18 @@ def _create_order(request, order_type):
 def order_edit(request, type, pk):
     if type == 'kit':
         order = get_object_or_404(KitOrder, id=pk)
-        form = KitOrderForm({'order_quantity': order.order_quantity}, instance=order)
+        if request.method == 'POST':
+            form = KitOrderForm(request.POST, instance=order)
+        else:
+            form = KitOrderForm(instance=order)
     elif type == 'item':
-        order = ItemOrder.objects.get(id=pk)
-        form = ItemOrderForm(request.POST, instance=order)
+        order = get_object_or_404(ItemOrder, id=pk)
+        if request.method == 'POST':
+            form = ItemOrderForm(request.POST, instance=order)
+        else:
+            form = ItemOrderForm(instance=order)
     else:
-        return Http404()
+        raise Http404()
     if request.method == 'POST' and form.is_valid():
         form.save()
         return redirect('sparkshed-order')
