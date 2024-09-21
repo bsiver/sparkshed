@@ -26,6 +26,7 @@
                     <th data-sortable="true" scope="col">Product</th>
                     <th data-sortable="true" scope="col">Quantity</th>
                     <th data-sortable="true" scope="col">Ordered by</th>
+                    <th data-sortable="true" scope="col">Recipient</th>
                     <th scope="col">Action</th>
                 </tr>
                 </thead>
@@ -36,6 +37,7 @@
                         <td>{{ delivery.order.kit.name }}</td>
                         <td>{{ delivery.order.order_quantity }}</td>
                         <td>{{ delivery.order.customer.username }}</td>
+                        <td>{{ delivery.order.recipient }}</td>
                         <td>
                             <a class="btn btn-info btn-sm mr-2"
                                href="{% url 'sparkshed-delivery-edit' type='kit' pk=delivery.id %}">Edit</a>
