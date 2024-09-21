@@ -25,9 +25,9 @@ urlpatterns = [
 
     # deliveries
     path('deliveries/', views.delivery, name='deliveries'),
-    path('delivery/delete/<str:type>/<int:pk>/', views.delivery_delete, name='delivery-delete'),
-    path('delivery/detail/<str:type>/<int:pk>/', views.delivery_edit, name='delivery-edit'),
-    path('delivery/<str:type>/<int:order_id>/', views.create_delivery, name='delivery-create'),
+    path('delivery/delete/<str:type>/<int:pk>/', views.delivery_delete, name='sparkshed-delivery-delete'),
+    path('delivery/detail/<str:type>/<int:pk>/', views.delivery_edit, name='sparkshed-delivery-edit'),
+    path('delivery/<str:type>/<int:order_id>/', views.create_delivery, name='sparkshed-delivery-create'),
 
     # kits
     path('kit/', views.kit, name='kits'),

@@ -296,40 +296,30 @@ def delivery(request):
 
 @login_required(login_url='user-login')
 def create_delivery(request, type, order_id):
-    return _create_delivery(request, order_id, type)
-
-
-def _create_delivery(request, order_id, delivery_type):
-    if delivery_type == 'item':
+    if type == 'item':
         order = get_object_or_404(ItemOrder, id=order_id)
         delivery = ItemDelivery(item=order.item, order=order)
         form = ItemDeliveryForm(instance=delivery)
-    elif delivery_type == 'kit':
+    elif type == 'kit':
         order = get_object_or_404(KitOrder, id=order_id)
         delivery = KitDelivery(kit=order.kit, order=order)
         form = KitDeliveryForm({'kit': order.kit, 'order': order}, instance=delivery)
     else:
         raise Http404()
 
-    if not form.is_valid():
-        return HttpResponseBadRequest(headers={
-            'HX-Trigger': json.dumps({
-                "showMessage": f"{form.errors}"
-            })
-        })
-
     obj = form.save(commit=False)
     obj.customer = request.user
     obj.clean()
     obj.save()
-    if request.htmx:
-        return HttpResponse(
-            status=200,
-            headers={
-                'HX-Trigger': json.dumps({
-                    "showMessage": f"Delivery created!"
-                })
-            })
+
+    context = {
+        'form': form
+    }
+
+    return render(request, 'dashboard/delivery.html', context)
+
+
+
 
 @login_required(login_url='user-login')
 def delivery_edit(request, type, pk):

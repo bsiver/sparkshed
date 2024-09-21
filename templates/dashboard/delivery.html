@@ -38,9 +38,9 @@
                         <td>{{ delivery.order.customer.username }}</td>
                         <td>
                             <a class="btn btn-info btn-sm mr-2"
-                               href="{% url 'delivery-edit' type='kit' pk=delivery.id %}">Edit</a>
+                               href="{% url 'sparkshed-delivery-edit' type='kit' pk=delivery.id %}">Edit</a>
                             <a class="btn btn-danger btn-sm ml-2"
-                               href="{% url 'delivery-delete' type='kit' pk=delivery.id %}">Delete</a>
+                               href="{% url 'sparkshed-delivery-delete' type='kit' pk=delivery.id %}">Delete</a>
                         </td>
                     </tr>
                 {% endfor %}

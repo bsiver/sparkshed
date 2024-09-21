@@ -78,14 +78,8 @@
                                                    href="{% url 'sparkshed-order-edit' type='kit' pk=order.id %}">Edit</a>
                                                 <a class="btn btn-danger btn-sm ml-2 mr-2"
                                                    href="{% url 'sparkshed-order-delete' type='kit' pk=order.id %}">Delete</a>
-                                                <form class="btn btn-primary btn-sm mr-2" hx-post='{{ order.get_deliver_url }}'
-                                                          method="POST"
-                                                          action="."
-                                                          hx-confirm='Deliver order?'
-                                                          hx-trigger='click'
-                                                          hx-target='#user-err'>
-                                                    <a>Deliver</a>
-                                                </form>
+                                                <a class="btn btn-primary btn-sm"
+                                                   href="{% url 'sparkshed-delivery-create' type='kit' order_id=order.id %}">Deliver</a>
                                                 <div class="text-danger mt-2" style="color:red;" id="user-err"></div>
                                             </td>
                                         </tr>
