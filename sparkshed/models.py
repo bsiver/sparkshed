@@ -13,6 +13,10 @@ from sparkshed.helpers import namedtuplefetchall
 class ItemManager(models.Manager):
     def with_quantities_and_kits(self):
         items = list(self.all())
+
+        if not items:
+            return []
+
         item_ids = [item.id for item in items]
 
         # Bulk fetch data for quantity_ordered
@@ -153,6 +157,7 @@ class KitItem(models.Model):
 class Order(models.Model):
     customer = models.ForeignKey(User, on_delete=models.CASCADE)
     order_quantity = models.PositiveIntegerField()
+    recipient = models.CharField(max_length=120)
     updated_date = models.DateTimeField(editable=False, auto_now=True)
 
     def __str__(self):

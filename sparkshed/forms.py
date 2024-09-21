@@ -45,7 +45,7 @@ KitItemFormSet = inlineformset_factory(
 class KitOrderForm(forms.ModelForm):
     class Meta:
         model = KitOrder
-        fields = ['kit', 'order_quantity']
+        fields = ['kit', 'order_quantity', 'recipient']
 
     def clean(self):
         super(KitOrderForm, self).clean()

@@ -9,6 +9,7 @@ output_file="output.sql"
 
 export PGPASSWORD="$password"
 
-pg_dump -U "$username" -h "$host" -d "$database_name" -Fc -f "$output_file"
+pg_dump -U "$username" -h "$host" -d "$database_name" -s -f "${output_file}_schema.sql"
+pg_dump -U "$username" -h "$host" -d "$database_name" -a -f "${output_file}_data.sql"
 
 echo "Schema and data dumped to $output_file"
