@@ -19,35 +19,36 @@ class ItemManager(models.Manager):
 
         item_ids = [item.id for item in items]
 
-        # Fetch ordered quantities from kit orders
+        # Fetch ordered quantities from kit orders (ensure we account for both order_quantity and item quantity in the kit)
         kit_order_sql = f"""
             SELECT ki.item_id, ko.order_quantity, ki.quantity
             FROM sparkshed_kitorder ko
             JOIN sparkshed_kit k ON ko.kit_id = k.id
             JOIN sparkshed_kititem ki ON k.id = ki.kit_id
-            LEFT JOIN sparkshed_kitdelivery kd ON kd.kit_id = k.id
             WHERE ki.item_id IN ({','.join(map(str, item_ids))})
-            AND kd.id IS NULL
         """
         with connection.cursor() as cursor:
             cursor.execute(kit_order_sql)
             kit_order_results = namedtuplefetchall(cursor)
 
+        # Calculate ordered quantities from kits
         ordered_from_kits = defaultdict(int)
         for result in kit_order_results:
+            # Multiply the number of kits ordered by the quantity of the item in each kit
             ordered_from_kits[result.item_id] += result.order_quantity * result.quantity
 
-        # Fetch item orders (non-kit orders)
+        # Fetch non-kit item orders
         item_orders = ItemOrder.objects.filter(item_id__in=item_ids).values('item_id').annotate(total_order_quantity=Sum('order_quantity'))
 
         # Fetch item deliveries (non-kit deliveries)
         item_deliveries = ItemDelivery.objects.filter(item_id__in=item_ids).values('item_id').annotate(total_order_quantity=Sum('order__order_quantity'))
 
-        # Fetch kit deliveries using ORM, ensuring KitItem quantity is accounted for
+        # Fetch kit deliveries (account for KitItem quantity)
         kit_deliveries = KitDelivery.objects.filter(kit__kititems__item_id__in=item_ids) \
             .values('kit__kititems__item_id', 'kit__kititems__quantity') \
             .annotate(total_delivered_kits=Sum('order__order_quantity'))
 
+        # Calculate delivered quantities from kits
         delivered_from_kits = defaultdict(int)
         for result in kit_deliveries:
             # Multiply the quantity of the item in the kit by the total delivered kits
@@ -71,13 +72,16 @@ class ItemManager(models.Manager):
         for result in kit_names_results:
             kits_for_items[result.item_id].append(result.kit_name)
 
-        # Assign the calculated quantities and kit names to each item
         for item in items:
-            # Total ordered quantity includes both item orders and kit orders
-            item._quantity_ordered = ordered_quantities.get(item.id, 0) + ordered_from_kits[item.id]
+            # Total ordered quantity includes both regular orders and kit orders
+            total_ordered = ordered_quantities.get(item.id, 0) + ordered_from_kits[item.id]
 
-            # Total delivered quantity includes both item deliveries and kit deliveries
-            item._quantity_delivered = delivered_quantities.get(item.id, 0) + delivered_from_kits.get(item.id, 0)
+            # Total delivered quantity includes both regular deliveries and kit deliveries
+            total_delivered = delivered_quantities.get(item.id, 0) + delivered_from_kits.get(item.id, 0)
+
+            # Subtract delivered quantities from ordered quantities
+            item._quantity_ordered = max(0, total_ordered - total_delivered)  # Exclude already delivered quantities
+            item._quantity_delivered = total_delivered
 
             # Attach the kit names to each item
             item._kit_names = kits_for_items[item.id]
