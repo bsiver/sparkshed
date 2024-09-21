@@ -14,11 +14,21 @@
          <div id="kititems">
                 {% for form in kit_item_formset %}
                     <div class="kititem-form border rounded p-2 mb-2">
-                        {{ form|crispy }}
-                        {% if form.instance.pk %}
-                            <input type="checkbox" name="kititems-{{ forloop.counter0 }}-DELETE" id="id_kititems-{{ forloop.counter0 }}-DELETE">
-                            <label for="id_kititems-{{ forloop.counter0 }}-DELETE" class="mr-4">Delete This Item</label>
-                        {% endif %}
+                        <div class="row">
+                            {% for field in form.visible_fields %}
+                                <div class="col-md">
+                                    {{ field.label_tag }}
+                                    {{ field }}   
+                                    {{ field.errors }}
+                                </div>
+                            {% endfor %}
+                            {% if form.instance.pk %}
+                                <div class="col-md-auto">
+                                    <input type="checkbox" name="kititems-{{ forloop.counter0 }}-DELETE" id="id_kititems-{{ forloop.counter0 }}-DELETE">
+                                    <label for="id_kititems-{{ forloop.counter0 }}-DELETE" class="mr-4">Delete This Item</label>
+                                </div>
+                            {% endif %}
+                        </div>
                     </div>
                 {% endfor %}
         </div>
