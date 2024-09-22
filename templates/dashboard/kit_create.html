@@ -2,8 +2,6 @@
 {% load crispy_forms_filters %}
 {% block title %}{{ kit_form.instance.pk|yesno:"Edit Kit,Create Kit" }}{% endblock %}
 
-
-
 {% block content %}
 <body>
      <h1>{{ kit_form.instance.pk|yesno:"Edit Kit,Create Kit" }}</h1>
@@ -14,18 +12,17 @@
          <div id="kititems">
                 {% for form in kit_item_formset %}
                     <div class="kititem-form border rounded p-2 mb-2">
-                        <div class="row">
-                            {% for field in form.visible_fields %}
-                                <div class="col-md">
-                                    {{ field.label_tag }}
-                                    {{ field }}   
-                                    {{ field.errors }}
-                                </div>
-                            {% endfor %}
+                        <div class="row align-items-center">
+                            <div class="col-md-8">
+                                {{ form.item | as_crispy_field }}
+                            </div>
+                            <div class="col-md-4">
+                                {{ form.quantity | as_crispy_field }}
+                            </div>
                             {% if form.instance.pk %}
-                                <div class="col-md-auto">
+                                <div class="col-md-auto text-right">
                                     <input type="checkbox" name="kititems-{{ forloop.counter0 }}-DELETE" id="id_kititems-{{ forloop.counter0 }}-DELETE">
-                                    <label for="id_kititems-{{ forloop.counter0 }}-DELETE" class="mr-4">Delete This Item</label>
+                                    <label for="id_kititems-{{ forloop.counter0 }}-DELETE" class="ml-2">Delete This Item</label>
                                 </div>
                             {% endif %}
                         </div>
@@ -35,6 +32,7 @@
         <button type="button" id="add-kititem" class="btn btn-primary">Add Another Item</button>
         <button type="submit" class="btn btn-success btn-block">Save Kit</button>
     </form>
+
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             const addKitItemButton = document.getElementById('add-kititem');
@@ -48,7 +46,6 @@
 
                 newForm.innerHTML = newForm.innerHTML.replace(formRegex, `-${currentFormCount}-`);
                 kititemsContainer.appendChild(newForm);
-                {#totalForms.setAttribute('value', currentFormCount + 1);#}
 
                 newForm.querySelectorAll('input').forEach(function (input) {
                     if (input.type !== 'hidden') {
@@ -64,7 +61,7 @@
 
                 const deleteLabel = document.createElement('label');
                 deleteLabel.setAttribute('for', `id_kititem_set-${currentFormCount}-DELETE`);
-                deleteLabel.classList.add('mr-4');
+                deleteLabel.classList.add('ml-2');
                 deleteLabel.textContent = 'Remove Item';
 
                 const deleteDiv = document.createElement('div');
@@ -73,7 +70,6 @@
 
                 newForm.appendChild(deleteDiv);
 
-                kititemsContainer.appendChild(newForm);
                 totalForms.setAttribute('value', currentFormCount + 1);
 
                 // Add event listener to the delete checkbox
