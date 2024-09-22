@@ -36,6 +36,11 @@ class KitItemForm(forms.ModelForm):
         model = KitItem
         fields = ['item', 'quantity']
 
+    def __init__(self, *args, **kwargs):
+        super(KitItemForm, self).__init__(*args, **kwargs)
+        self.fields['item'].queryset = Item.objects.all()
+        self.fields['item'].label_from_instance = lambda obj: f"{obj.name} - {obj.description}"
+
 
 KitItemFormSet = inlineformset_factory(
     Kit, KitItem, form=KitItemForm,
@@ -60,12 +65,6 @@ class KitOrderForm(forms.ModelForm):
                 self.add_error('order_quantity', f"Insufficient {kit_item.item.name} in stock to fulfill order "
                                                  f"({items_in_stock}/{items_required}) in stock")
         return self.cleaned_data
-
-
-class KitItemForm(forms.ModelForm):
-    class Meta:
-        model = KitItem
-        fields = ['item', 'quantity']
 
 
 class KitDeliveryForm(forms.ModelForm):
