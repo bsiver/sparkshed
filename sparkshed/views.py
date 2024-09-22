@@ -262,13 +262,18 @@ def create_or_edit_kit(request, id=None):
                     )
 
             return redirect('kits')
+        else:
+            return render(request, 'dashboard/kit_create.html', {
+                'kit_form': kit_form,
+                'kit_item_formset': kit_item_formset
+            })
     else:
         kit_form = KitForm(instance=kit)
         kit_item_formset = KitItemFormSet(instance=kit)
 
     return render(request, 'dashboard/kit_create.html', {
         'kit_form': kit_form,
-        'kit_item_formset': kit_item_formset,
+        'kit_item_formset': kit_item_formset
     })
 
 @login_required(login_url='user-login')
