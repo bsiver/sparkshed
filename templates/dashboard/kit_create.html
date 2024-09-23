@@ -13,7 +13,7 @@
             {% for form in kit_item_formset %}
                 <div class="kititem-form border rounded p-2 mb-2">
                     <div class="row align-items-center">
-                        <div class="col-md-8">
+                        <div class="col-md-6">
                             {{ form.item | as_crispy_field }}
                             {{ form.id }}
                         </div>
@@ -21,11 +21,10 @@
                             {{ form.quantity | as_crispy_field }}
                         </div>
                         {% if form.instance.pk %}
-                            <div class="col-md-auto text-right">
+                            <div class="col-md-2 text-right">
                                 <input type="checkbox" name="kititems-{{ forloop.counter0 }}-DELETE"
                                        id="id_kititems-{{ forloop.counter0 }}-DELETE">
-                                <label for="id_kititems-{{ forloop.counter0 }}-DELETE" class="ml-2">Delete This
-                                    Item</label>
+                                <label for="id_kititems-{{ forloop.counter0 }}-DELETE" class="ml-2">Delete</label>
                             </div>
                         {% endif %}
                     </div>
