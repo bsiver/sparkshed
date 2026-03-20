@@ -207,7 +207,7 @@ def order_delete(request, type, pk):
     elif type == 'item':
         order = ItemOrder.objects.get(id=pk)
     else:
-        return Http404()
+        raise Http404()
     if request.method == 'POST':
         order.delete()
         return redirect('sparkshed-order')
@@ -310,18 +310,20 @@ def create_delivery(request, type, order_id):
     if type == 'item':
         order = get_object_or_404(ItemOrder, id=order_id)
         delivery = ItemDelivery(item=order.item, order=order)
-        form = ItemDeliveryForm(instance=delivery)
+        form = ItemDeliveryForm(request.POST or None, instance=delivery)
     elif type == 'kit':
         order = get_object_or_404(KitOrder, id=order_id)
         delivery = KitDelivery(kit=order.kit, order=order)
-        form = KitDeliveryForm({'kit': order.kit, 'order': order}, instance=delivery)
+        form = KitDeliveryForm(request.POST or None, instance=delivery)
     else:
         raise Http404()
 
-    obj = form.save(commit=False)
-    obj.customer = request.user
-    obj.clean()
-    obj.save()
+    if request.method == 'POST' and form.is_valid():
+        obj = form.save(commit=False)
+        obj.customer = request.user
+        obj.clean()
+        obj.save()
+        return redirect('sparkshed-delivery')
 
     context = {
         'form': form
@@ -341,7 +343,7 @@ def delivery_edit(request, type, pk):
         delivery = ItemDelivery.objects.get(id=pk)
         form = ItemDeliveryForm(request.POST, instance=delivery)
     else:
-        return Http404()
+        raise Http404()
     if request.method == 'POST' and form.is_valid():
         form.save()
         return redirect('sparkshed-delivery')
@@ -358,7 +360,7 @@ def delivery_delete(request, type, pk):
     elif type == 'item':
         delivery = ItemDelivery.objects.get(id=pk)
     else:
-        return Http404()
+        raise Http404()
     if request.method == 'POST':
         delivery.delete()
         return redirect('deliveries')

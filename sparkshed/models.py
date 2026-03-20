@@ -138,12 +138,6 @@ class Kit(models.Model):
     def title(self):
         return self.name
 
-    def get_absolute_url(self):
-        return reverse('kit-detail', kwargs={"id": self.id})
-
-    def get_hx_url(self):
-        return reverse("kit-detail", kwargs={"id": self.id})
-
     def get_edit_url(self):
         return reverse("kit-create-edit", kwargs={"id": self.id})
 
@@ -160,21 +154,7 @@ class KitItem(models.Model):
     quantity = models.PositiveIntegerField()
 
     def get_absolute_url(self):
-        return self.kit.get_absolute_url()
-
-    def get_delete_url(self):
-        kwargs = {
-            "parent_id": self.kit.id,
-            "id": self.id
-        }
-        return reverse("kit-item-delete", kwargs=kwargs)
-
-    def get_hx_edit_url(self):
-        kwargs = {
-            "parent_id": self.kit.id,
-            "id": self.id
-        }
-        return reverse("kit-item-detail", kwargs=kwargs)
+        return self.kit.get_edit_url()
 
 
 class Order(models.Model):
@@ -198,7 +178,7 @@ class KitOrder(Order):
             "type": 'kit',
             "order_id": self.id
         }
-        return reverse("delivery-create", kwargs=kwargs)
+        return reverse("sparkshed-delivery-create", kwargs=kwargs)
 
     def is_delivered(self):
         return KitDelivery.objects.filter(order_id=self.id).exists()

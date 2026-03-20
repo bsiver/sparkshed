@@ -23,6 +23,7 @@ def register(request):
     return render(request, 'user/register.html', context)
 
 
+@login_required(login_url='user-login')
 def profile(request):
     context = {
 
@@ -30,6 +31,7 @@ def profile(request):
     return render(request, 'user/profile.html', context)
 
 
+@login_required(login_url='user-login')
 def profile_update(request):
     if request.method == 'POST':
         u_form = UserUpdateForm(request.POST, instance=request.user)
