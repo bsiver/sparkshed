@@ -9,6 +9,9 @@ from sparkshed.models import KitOrder
 
 
 def stats_bar(request):
+    if not request.user.is_authenticated:
+        return {}
+
     kit_count = Kit.objects.all().count()
     customer_count = User.objects.all().count()
     item_count = Item.objects.all().count()

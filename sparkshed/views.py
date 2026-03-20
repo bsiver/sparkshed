@@ -82,9 +82,9 @@ def customers(request):
 
 @login_required(login_url='user-login')
 def customer_detail(request, pk):
-    customers = User.objects.all()
+    customer = get_object_or_404(User, pk=pk)
     context = {
-        'customers': customers,
+        'customer': customer,
     }
     return render(request, 'dashboard/customers_detail.html', context)
 
@@ -148,24 +148,27 @@ def item_order(request):
 
 def _create_order(request, order_type):
     if order_type == 'item':
-        form = ItemOrderForm(request.POST)
+        form = ItemOrderForm(request.POST or None)
     elif order_type == 'kit':
-        form = KitOrderForm(request.POST)
+        form = KitOrderForm(request.POST or None)
     else:
         raise Http404()
-    if form.is_valid():
+
+    if request.method == 'POST' and form.is_valid():
         obj = form.save(commit=False)
         obj.customer = request.user
         obj.save()
+        return redirect('sparkshed-orders')
 
     kit_orders = list(KitOrder.objects.all())
     item_orders = list(ItemOrder.objects.all())
 
     item_form = ItemOrderForm()
+    kit_form = KitOrderForm() if order_type == 'item' else form
 
     context = {
-        'item_form': item_form,
-        'kit_form': form,
+        'item_form': form if order_type == 'item' else item_form,
+        'kit_form': kit_form,
         'new_kit_order_url': reverse('kit-order-create'),
         'new_item_order_url': reverse('item-order-create'),
         'item_orders': item_orders,
@@ -239,28 +242,8 @@ def create_or_edit_kit(request, id=None):
 
         if kit_form.is_valid() and kit_item_formset.is_valid():
             kit = kit_form.save()
-            item_quantities = defaultdict(int)
-
-            for form in kit_item_formset:
-                if form.cleaned_data.get('DELETE'):
-                    if form.instance.pk:
-                        form.instance.delete()
-                    continue
-
-                item = form.cleaned_data.get('item')
-                quantity = form.cleaned_data.get('quantity', 0)
-                if item:
-                    item_quantities[item] += quantity
-
-            for item, total_quantity in item_quantities.items():
-                if total_quantity == 0:
-                    KitItem.objects.filter(kit=kit, item=item).delete()
-                else:
-                    KitItem.objects.update_or_create(
-                        kit=kit, item=item,
-                        defaults={'quantity': total_quantity}
-                    )
-
+            kit_item_formset.instance = kit
+            kit_item_formset.save()
             return redirect('kits')
         else:
             return render(request, 'dashboard/kit_create.html', {

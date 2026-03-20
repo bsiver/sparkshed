@@ -46,6 +46,21 @@
                         </td>
                     </tr>
                 {% endfor %}
+                {% for delivery in item_deliveries %}
+                    <tr>
+                        <td>{{ delivery.delivery_date | date:"n/j/y h:i A" }}</td>
+                        <td>{{ delivery.item.name }}</td>
+                        <td>{{ delivery.order.order_quantity }}</td>
+                        <td>{{ delivery.order.customer.username }}</td>
+                        <td>{{ delivery.order.recipient }}</td>
+                        <td>
+                            <a class="btn btn-info btn-sm mr-2"
+                               href="{% url 'sparkshed-delivery-edit' type='item' pk=delivery.id %}">Edit</a>
+                            <a class="btn btn-danger btn-sm ml-2"
+                               href="{% url 'sparkshed-delivery-delete' type='item' pk=delivery.id %}">Delete</a>
+                        </td>
+                    </tr>
+                {% endfor %}
                 </tbody>
             </table>
         </div>
