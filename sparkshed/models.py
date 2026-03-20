@@ -20,15 +20,16 @@ class ItemManager(models.Manager):
         item_ids = [item.id for item in items]
 
         # Fetch ordered quantities from kit orders (ensure we account for both order_quantity and item quantity in the kit)
+        placeholders = ','.join(['%s'] * len(item_ids))
         kit_order_sql = f"""
             SELECT ki.item_id, ko.order_quantity, ki.quantity
             FROM sparkshed_kitorder ko
             JOIN sparkshed_kit k ON ko.kit_id = k.id
             JOIN sparkshed_kititem ki ON k.id = ki.kit_id
-            WHERE ki.item_id IN ({','.join(map(str, item_ids))})
+            WHERE ki.item_id IN ({placeholders})
         """
         with connection.cursor() as cursor:
-            cursor.execute(kit_order_sql)
+            cursor.execute(kit_order_sql, item_ids)
             kit_order_results = namedtuplefetchall(cursor)
 
         # Calculate ordered quantities from kits
@@ -58,14 +59,15 @@ class ItemManager(models.Manager):
         delivered_quantities = {delivery['item_id']: delivery['total_order_quantity'] for delivery in item_deliveries}
 
         # Fetch kit names for each item
+        placeholders = ','.join(['%s'] * len(item_ids))
         kit_names_sql = f"""
             SELECT ki.item_id, k.name as kit_name
             FROM sparkshed_kititem ki
             JOIN sparkshed_kit k ON ki.kit_id = k.id
-            WHERE ki.item_id IN ({','.join(map(str, item_ids))})
+            WHERE ki.item_id IN ({placeholders})
         """
         with connection.cursor() as cursor:
-            cursor.execute(kit_names_sql)
+            cursor.execute(kit_names_sql, item_ids)
             kit_names_results = namedtuplefetchall(cursor)
 
         kits_for_items = defaultdict(list)
@@ -161,6 +163,7 @@ class Order(models.Model):
     customer = models.ForeignKey(User, on_delete=models.CASCADE)
     order_quantity = models.PositiveIntegerField()
     recipient = models.CharField(max_length=120)
+    created_date = models.DateTimeField(editable=False, auto_now_add=True)
     updated_date = models.DateTimeField(editable=False, auto_now=True)
 
     def __str__(self):
@@ -200,8 +203,19 @@ class ItemDelivery(Delivery):
     order = models.ForeignKey(ItemOrder, on_delete=models.CASCADE)
 
     def clean(self):
-        if self.item.quantity < self.order.order_quantity:
-            raise ValidationError(f"{self.item.name} quantity cannot exceed amount in stock ({self.item.quantity})")
+        # Calculate how much stock is already allocated/delivered
+        already_delivered = ItemDelivery.objects.filter(
+            item=self.item
+        ).exclude(pk=self.pk).aggregate(
+            total=Sum('order__order_quantity')
+        )['total'] or 0
+
+        available_stock = self.item.quantity - already_delivered
+        if available_stock < self.order.order_quantity:
+            raise ValidationError(
+                f"{self.item.name} quantity cannot exceed available stock "
+                f"({available_stock} available, {self.order.order_quantity} requested)"
+            )
 
 
 class KitDelivery(Delivery):
