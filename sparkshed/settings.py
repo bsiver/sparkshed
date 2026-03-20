@@ -16,8 +16,6 @@ SECRET_KEY = os.getenv("SECRET_KEY", default="test_key")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = 'RENDER' not in os.environ
 
-DEVELOPMENT_MODE = os.getenv("DEVELOPMENT_MODE", "False") == "True"
-
 # https://docs.djangoproject.com/en/3.0/ref/settings/#allowed-hosts
 ALLOWED_HOSTS = []
 
@@ -80,22 +78,16 @@ WSGI_APPLICATION = 'sparkshed.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
 
-if DEVELOPMENT_MODE:
+if 'DATABASE_URL' in os.environ:
     DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.mysql',
-            'NAME': 'inventory',
-            'USER': 'root',
-            'PASSWORD': '',
-            'HOST': 'localhost',
-            'PORT': '3306',
-        }
+        'default': dj_database_url.config(conn_max_age=600)
     }
 else:
     DATABASES = {
-        'default': dj_database_url.config(
-            default='postgresql://postgres:postgres@localhost:5432/mysite',
-            conn_max_age=600)
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
     }
 
 

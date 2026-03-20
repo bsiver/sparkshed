@@ -1,0 +1,32 @@
+version: '3.9'
+
+services:
+  web:
+    build: .
+    command: sh -c "python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
+    volumes:
+      - .:/app
+    ports:
+      - "8000:8000"
+    environment:
+      - DEBUG=True
+      - DATABASE_URL=${DATABASE_URL:-}  # Leave empty to use SQLite
+    depends_on:
+      - db
+
+  db:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_USER: sparkshed
+      POSTGRES_PASSWORD: sparkshed
+      POSTGRES_DB: sparkshed
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    # Only start if DATABASE_URL references postgres
+    profiles:
+      - postgres
+
+volumes:
+  postgres_data:
